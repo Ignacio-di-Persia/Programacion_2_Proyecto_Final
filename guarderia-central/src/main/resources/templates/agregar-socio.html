@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Socio</title>
+    <style>
+        /* ===== Estilos iguales al original ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+        h1 { color: #333; margin-bottom: 30px; text-align: center; }
+        .btn-home {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-home:hover { background: #5a6268; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        .form-group input:focus { outline: none; border-color: #667eea; }
+        .form-group input.error { border-color: #dc3545; }
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        .error-message.show { display: block; }
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .modal-content h2 { color: #333; margin-bottom: 15px; }
+        .modal-content p { color: #666; margin-bottom: 20px; }
+        .modal-buttons { display: flex; gap: 10px; justify-content: center; }
+        .btn-modal { padding: 10px 25px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-success:hover { background: #218838; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-secondary:hover { background: #5a6268; }
+        .alert { padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; }
+        .alert.show { display: block; }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .required { color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a th:href="@{/}" class="btn-home">🏠 Volver al Inicio</a>
+        
+        <h1>➕ Agregar Nuevo Socio</h1>
+
+        <div id="alertContainer"></div>
+
+        <form id="socioForm">
+            <div class="form-group">
+                <label for="dni">DNI: <span class="required">*</span></label>
+                <input type="number" id="dni" name="dni" required min="10000000" max="999999999">
+                <div id="dniError" class="error-message">DNI existente</div>
+            </div>
+
+            <div class="form-group">
+                <label for="nombres">Nombres: <span class="required">*</span></label>
+                <input type="text" id="nombres" name="nombres" required minlength="2" maxlength="100">
+                <div id="nombresError" class="error-message">Los nombres son obligatorios</div>
+            </div>
+
+            <div class="form-group">
+                <label for="apellidos">Apellidos: <span class="required">*</span></label>
+                <input type="text" id="apellidos" name="apellidos" required minlength="2" maxlength="100">
+                <div id="apellidosError" class="error-message">Los apellidos son obligatorios</div>
+            </div>
+
+            <div class="form-group">
+                <label for="fechaNacimiento">Fecha de Nacimiento: <span class="required">*</span></label>
+                <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
+                <div id="fechaError" class="error-message">La fecha de nacimiento es obligatoria</div>
+            </div>
+
+            <div class="form-group">
+                <label for="correo">Correo Electrónico: <span class="required">*</span></label>
+                <input type="email" id="correo" name="correo" required maxlength="150">
+                <div id="correoError" class="error-message">El correo es obligatorio y debe ser válido</div>
+            </div>
+
+            <div class="form-group">
+                <label for="vehiculo">Vehículo:</label>
+                <input type="text" id="vehiculo" name="vehiculo" placeholder="Ej: Toyota Corolla">
+            </div>
+
+            <div class="form-group">
+                <label for="garage">Garage:</label>
+                <input type="text" id="garage" name="garage" placeholder="Ej: Garage A">
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn">Agregar Socio</button>
+        </form>
+    </div>
+
+    <!-- Modal de éxito -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <h2>✅ ¡Éxito!</h2>
+            <p>El socio ha sido agregado correctamente.</p>
+            <div class="modal-buttons">
+                <button class="btn-modal btn-success" onclick="agregarOtro()">Agregar Otro</button>
+                <a th:href="@{/lista-socios}" class="btn-modal btn-secondary" style="text-decoration: none; line-height: 2;">Ver Lista de Socios</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de error DNI existente -->
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <h2>⚠️ DNI Existente</h2>
+            <p>Ya existe un socio registrado con este DNI.</p>
+            <div class="modal-buttons">
+                <button class="btn-modal btn-secondary" onclick="closeErrorModal()">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/guarderia-central/api/socios';
+        let dniExistente = false;
+
+        document.getElementById('dni').addEventListener('blur', async function() {
+            const dni = this.value;
+            const dniError = document.getElementById('dniError');
+            const dniInput = this;
+
+            if (dni && dni.length >= 8) {
+                try {
+                    const response = await fetch(`${API_URL}/existe/${dni}`);
+                    const data = await response.json();
+
+                    if (data.existe) {
+                        dniExistente = true;
+                        dniInput.classList.add('error');
+                        dniError.classList.add('show');
+                        document.getElementById('errorModal').style.display = 'flex';
+                    } else {
+                        dniExistente = false;
+                        dniInput.classList.remove('error');
+                        dniError.classList.remove('show');
+                    }
+                } catch (error) {
+                    console.error('Error al verificar DNI:', error);
+                }
+            }
+        });
+
+        document.getElementById('socioForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            if (dniExistente) {
+                document.getElementById('errorModal').style.display = 'flex';
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Guardando...';
+
+            const socio = {
+                dni: parseInt(document.getElementById('dni').value),
+                nombres: document.getElementById('nombres').value.trim(),
+                apellidos: document.getElementById('apellidos').value.trim(),
+                fechaNacimiento: document.getElementById('fechaNacimiento').value,
+                correo: document.getElementById('correo').value.trim(),
+                vehiculo: document.getElementById('vehiculo').value.trim() || null,
+                garage: document.getElementById('garage').value.trim() || null
+            };
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(socio)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Error al crear el socio');
+                }
+
+                document.getElementById('successModal').style.display = 'flex';
+
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert(error.message, 'danger');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Agregar Socio';
+            }
+        });
+
+        function agregarOtro() {
+            document.getElementById('successModal').style.display = 'none';
+            document.getElementById('socioForm').reset();
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('submitBtn').textContent = 'Agregar Socio';
+            dniExistente = false;
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+            document.querySelectorAll('input').forEach(el => el.classList.remove('error'));
+        }
+
+        function closeErrorModal() {
+            document.getElementById('errorModal').style.display = 'none';
+        }
+
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+            const alert = document.createElement('div');
+            alert.className = `alert ${alertClass} show`;
+            alert.textContent = message;
+            alertContainer.innerHTML = '';
+            alertContainer.appendChild(alert);
+            setTimeout(() => { alert.classList.remove('show'); }, 3000);
+        }
+
+        window.onclick = function(event) {
+            if (event.target === document.getElementById('successModal')) {
+                document.getElementById('successModal').style.display = 'none';
+            }
+            if (event.target === document.getElementById('errorModal')) {
+                closeErrorModal();
+            }
+        }
+
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('fechaNacimiento').setAttribute('max', today);
+    </script>
+</body>
+</html>
