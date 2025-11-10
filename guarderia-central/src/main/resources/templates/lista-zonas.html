@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Listado de Zonas</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    min-height:100vh; padding:20px;
+}
+.container { max-width:1000px; margin:auto; background:white; padding:30px; border-radius:15px; box-shadow:0 10px 40px rgba(0,0,0,0.2);}
+h1 { text-align:center; margin-bottom:25px; }
+table { width:100%; border-collapse:collapse; }
+th, td { padding:12px; border-bottom:1px solid #ddd; text-align:center; }
+th { background:#667eea; color:white; }
+tr:hover { background:#f2f2f2; }
+.btn { padding:10px 18px; border-radius:8px; border:none; font-weight:600; cursor:pointer; text-decoration:none; transition:0.3s; display:inline-block; }
+.btn-add { background:#28a745; color:white; margin-top:20px; }
+.btn-add:hover { background:#218838; }
+</style>
+</head>
+<body>
+<div class="container">
+
+    
+    <a th:href="@{/}" class="btn btn-home">🏠 Volver al Inicio</a>
+<h1>🏷️ Zonas Registradas</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Tipo Vehículos</th>
+            <th>Cantidad</th>
+            <th>Profundidad</th>
+            <th>Ancho</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="zona : ${zonas}">
+            <td th:text="${zona.codigo}"></td>
+            <td th:text="${zona.tipoVehiculos}"></td>
+            <td th:text="${zona.cantidadVehiculos}"></td>
+            <td th:text="${zona.profundidad}"></td>
+            <td th:text="${zona.ancho}"></td>
+        </tr>
+    </tbody>
+</table>
+<a href="/guarderia-central/zonas/agregar" class="btn btn-add">➕ Agregar Zona</a>
+</div>
+</body>
+</html>

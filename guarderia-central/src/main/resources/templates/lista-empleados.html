@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lista de Empleados</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    min-height:100vh; padding:20px;
+}
+.container {
+    max-width:1200px; margin:auto; background:white; border-radius:15px;
+    padding:30px; box-shadow:0 10px 40px rgba(0,0,0,0.2);
+}
+h1 { text-align:center; margin-bottom:25px; }
+.btn { padding:10px 15px; border-radius:8px; border:none; font-weight:600; cursor:pointer; text-decoration:none; display:inline-block; transition:0.3s; }
+.btn-home { background:#6c757d; color:white; margin-bottom:20px; }
+.btn-home:hover { background:#5a6268; }
+.btn-add { background:#28a745; color:white; margin-bottom:15px; }
+.btn-add:hover { background:#218838; }
+.btn-edit { background:#ffc107; }
+.btn-edit:hover { background:#e0a800; }
+.btn-delete { background:#dc3545; color:white; }
+.btn-delete:hover { background:#c82333; }
+table { width:100%; border-collapse:collapse; margin-top:10px; }
+th, td { padding:12px; border-bottom:1px solid #ddd; text-align:center; }
+th { background:#667eea; color:white; }
+tr:hover { background:#f2f2f2; }
+.actions { display:flex; gap:5px; justify-content:center; }
+.modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; }
+.modal-content { background:white; padding:25px; border-radius:10px; width:400px; box-shadow:0 10px 30px rgba(0,0,0,0.2); text-align:center; }
+</style>
+</head>
+<body>
+<div class="container">
+    <a th:href="@{/}" class="btn btn-home">🏠 Volver al Inicio</a>
+    <h1>👷 Lista de Empleados</h1>
+    <a th:href="@{/empleados/agregar-empleado}" class="btn btn-add">➕ Agregar Empleado</a>
+
+    <table>
+        <thead>
+        <tr>
+            <th>DNI</th>
+            <th>Nombres</th>
+            <th>Apellidos</th>
+            <th>Dirección</th>
+            <th>Teléfono</th>
+            <th>Especialidad</th>
+            <th>Zona Asignada</th>
+            <th>Cant. vehiculos</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody id="empleadosBody"></tbody>
+    </table>
+</div>
+
+<!-- MODAL EDITAR EMPLEADO -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <h3>✏️ Editar Empleado</h3>
+        <form id="editForm">
+
+            <label>Código (ID):</label>
+            <input type="number" id="editCodigo" readonly><br><br>
+
+            <label>DNI:</label>
+            <input type="number" id="editDni" required><br><br>
+
+            <label>Nombres:</label>
+            <input type="text" id="editNombres" required><br><br>
+
+            <label>Apellidos:</label>
+            <input type="text" id="editApellidos" required><br><br>
+
+            <label>Dirección:</label>
+            <input type="text" id="editDireccion"><br><br>
+
+            <label>Teléfono:</label>
+            <input type="text" id="editTelefono"><br><br>
+
+            <label>Especialidad:</label>
+            <input type="text" id="editEspecialidad"><br><br>
+
+            <!-- Si más adelante querés asignar zona, acá va un select -->
+
+            <button type="button" onclick="closeEditModal()" class="btn btn-home">Cancelar</button>
+            <button type="submit" class="btn btn-edit">Guardar</button>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL ELIMINAR -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <h3>❗ Confirmar Eliminación</h3>
+        <p>¿Seguro que deseas eliminar este empleado?</p>
+        <p><strong id="deleteNombre"></strong></p>
+        <br>
+        <button class="btn btn-home" onclick="closeDeleteModal()">Cancelar</button>
+        <button id="confirmDeleteBtn" class="btn btn-delete">Eliminar</button>
+    </div>
+</div>
+
+<script>
+const API_URL = '/guarderia-central/api/empleados'; // Capaz es de nuevo lo de la ruta con guarderia-central
+let codigoAEliminar = null;
+
+function openEditModal(empleado) {
+    document.getElementById("editCodigo").value = empleado.codigo;
+    document.getElementById("editDni").value = empleado.dni;
+    document.getElementById("editNombres").value = empleado.nombres;
+    document.getElementById("editApellidos").value = empleado.apellidos;
+    document.getElementById("editDireccion").value = empleado.direccion;
+    document.getElementById("editTelefono").value = empleado.telefono;
+    document.getElementById("editEspecialidad").value = empleado.especialidad;
+
+    document.getElementById("editModal").style.display = "block";
+}
+
+function closeEditModal() {
+    document.getElementById("editModal").style.display = "none";
+}
+
+async function cargarEmpleados(){
+    const res = await fetch(API_URL);
+    const empleados = await res.json();
+    mostrarEmpleados(empleados);
+}
+
+function mostrarEmpleados(lista){
+    const tbody = document.getElementById('empleadosBody');
+    tbody.innerHTML = lista.map(e=>`
+        <tr>
+            <td>${e.dni}</td>
+            <td>${e.nombres}</td>
+            <td>${e.apellidos}</td>
+            <td>${e.direccion || ''}</td>
+            <td>${e.telefono || ''}</td>
+            <td>${e.especialidad || ''}</td>
+            <td class="actions">
+                <a class="btn btn-edit" href="/empleados/editar/${e.dni}">✏️ Editar</a>
+                <button class="btn btn-delete" onclick="eliminarEmpleado(${e.dni})">🗑️ Eliminar</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+async function eliminarEmpleado(dni){
+    codigoAEliminar = dni;
+    const res = await fetch(`${API_URL}/${dni}`);
+    const e = await res.json();
+    document.getElementById("deleteNombre").textContent = `${e.nombres} ${e.apellidos} (DNI: ${e.dni})`;
+    document.getElementById("deleteModal").style.display='flex';
+}
+
+document.getElementById("confirmDeleteBtn").addEventListener("click", async ()=>{
+    await fetch(`${API_URL}/${codigoAEliminar}`,{method:'DELETE'});
+    closeDeleteModal();
+    cargarEmpleados();
+});
+
+function closeDeleteModal(){ document.getElementById("deleteModal").style.display='none'; }
+
+cargarEmpleados();
+</script>
+</body>
+</html>

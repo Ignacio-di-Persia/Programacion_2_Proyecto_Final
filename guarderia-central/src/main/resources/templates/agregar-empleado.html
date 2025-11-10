@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agregar Empleado</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+    min-height:100vh; padding:20px; display:flex; justify-content:center; align-items:center;
+}
+.container {
+    max-width:600px; width:100%; background:white; border-radius:15px; padding:40px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.2);
+}
+h1 { text-align:center; margin-bottom:30px; color:#333; }
+.btn-home {
+    background:#6c757d; color:white; padding:10px 20px; border:none; border-radius:8px;
+    text-decoration:none; display:inline-block; margin-bottom:20px; font-weight:600;
+    transition:0.3s;
+}
+.btn-home:hover { background:#5a6268; }
+.form-group { margin-bottom:20px; }
+.form-group label { display:block; font-weight:600; margin-bottom:5px; }
+.form-group input, .form-group select {
+    width:100%; padding:12px; border:1px solid #ccc; border-radius:8px;
+    transition:0.3s;
+}
+.form-group input:focus, .form-group select:focus { border-color:#667eea; outline:none; }
+.btn-submit {
+    width:100%; padding:15px; background:#667eea; color:white; border:none; border-radius:8px;
+    font-size:18px; font-weight:600; cursor:pointer; transition:0.3s;
+}
+.btn-submit:hover { background:#5a67d8; }
+.zona-item { margin-bottom:14px; padding-left:5px; }
+.vehiculos-input { margin-left:32px; margin-top:8px; width:80%; }
+.required { color:#dc3545; }
+.modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; }
+.modal-content { background:white; padding:30px; border-radius:15px; max-width:400px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.2);}
+.btn-modal { padding:10px 25px; border-radius:8px; font-weight:600; border:none; cursor:pointer; margin:5px;}
+.btn-success { background:#28a745; color:white; }
+.btn-secondary { background:#6c757d; color:white; }
+</style>
+</head>
+<body>
+<div class="container">
+    <a th:href="@{/}" class="btn-home">🏠 Volver al Inicio</a>
+    <h1>👷 Agregar Empleado</h1>
+    <form id="empleadoForm">
+        <div class="form-group">
+            <label>DNI <span class="required">*</span></label>
+            <input type="number" id="dni" required min="10000000" max="999999999">
+        </div>
+        <div class="form-group">
+            <label>Nombres <span class="required">*</span></label>
+            <input type="text" id="nombres" required>
+        </div>
+        <div class="form-group">
+            <label>Apellidos <span class="required">*</span></label>
+            <input type="text" id="apellidos" required>
+        </div>
+        <div class="form-group">
+            <label>Dirección</label>
+            <input type="text" id="direccion">
+        </div>
+        <div class="form-group">
+            <label>Teléfono</label>
+            <input type="text" id="telefono">
+        </div>
+        <div class="form-group">
+            <label>Especialidad</label>
+            <input type="text" id="especialidad">
+        </div>
+        <h3 style="margin-top:25px;margin-bottom:10px;">🏷️ Asignar Zonas</h3>
+        <small>Seleccione zonas y, si quiere, especifique vehículos asignados:</small>
+        <div id="zonaContainer" style="margin-top:12px;"></div>
+        <button class="btn-submit" type="submit">Guardar Empleado</button>
+    </form>
+</div>
+
+<div id="successModal" class="modal">
+    <div class="modal-content">
+        <h2>✅ ¡Empleado guardado!</h2>
+        <div>
+            <button class="btn-modal btn-success" onclick="agregarOtro()">Agregar otro</button>
+            <a th:href="@{/empleados/lista-empleado}" class="btn-modal btn-secondary" style="text-decoration:none;">Ver lista</a>
+        </div>
+    </div>
+</div>
+
+<script>
+const API_EMPLEADOS = "/guarderia-central/api/empleados";
+const API_ZONAS = "/guarderia-central/api/zonas";
+
+async function cargarZonas() {
+    const res = await fetch(API_ZONAS);
+    const zonas = await res.json();
+    const cont = document.getElementById("zonaContainer");
+    cont.innerHTML = "";
+    zonas.forEach(z => {
+        const div = document.createElement("div");
+        div.className = "zona-item";
+        div.innerHTML = `<label>
+            <input type="checkbox" value="${z.codigo}" class="zona-check"> Zona ${z.codigo} (${z.tipoVehiculos})
+            </label>
+            <input type="number" min="0" placeholder="Vehículos asignados" class="vehiculos-input" style="display:none;">`;
+        cont.appendChild(div);
+        const check = div.querySelector(".zona-check");
+        const input = div.querySelector(".vehiculos-input");
+        check.addEventListener("change",()=>{input.style.display=check.checked?"block":"none";});
+    });
+}
+cargarZonas();
+
+document.getElementById("empleadoForm").addEventListener("submit", async e=>{
+    e.preventDefault();
+    const empleado={
+        dni: parseInt(document.getElementById("dni").value),
+        nombres: document.getElementById("nombres").value.trim(),
+        apellidos: document.getElementById("apellidos").value.trim(),
+        direccion: document.getElementById("direccion").value.trim()||null,
+        telefono: document.getElementById("telefono").value.trim()||null,
+        especialidad: document.getElementById("especialidad").value.trim()||null,
+        empleadosAsignados:[]
+    };
+    document.querySelectorAll(".zona-item").forEach(item=>{
+        const check=item.querySelector(".zona-check");
+        const input=item.querySelector(".vehiculos-input");
+        if(check.checked){ empleado.empleadosAsignados.push({id:{zonaCodigo:check.value}, zona:{codigo:check.value}, vehiculosAsignados:input.value?parseInt(input.value):0}); }
+    });
+    const res = await fetch(API_EMPLEADOS,{method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(empleado)});
+    if(res.ok){ document.getElementById("successModal").style.display="flex"; }
+});
+function agregarOtro(){
+    document.getElementById("successModal").style.display="none";
+    document.getElementById("empleadoForm").reset();
+    cargarZonas();
+}
+</script>
+</body>
+</html>

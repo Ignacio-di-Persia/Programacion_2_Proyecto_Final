@@ -49,9 +49,7 @@ public class SocioRestController {
 
     // PUT - Actualizar socio
     @PutMapping("/{dni}")
-    public ResponseEntity<Socio> actualizarSocio(
-            @PathVariable Integer dni,
-            @Valid @RequestBody Socio socio) {
+    public ResponseEntity<Socio> actualizarSocio(@PathVariable Integer dni,@Valid @RequestBody Socio socio) {
         log.info("PUT /api/socios/{} - Actualizando socio", dni);
         Socio socioActualizado = socioService.actualizarSocio(dni, socio);
         return ResponseEntity.ok(socioActualizado);

@@ -57,6 +57,7 @@
                 <th>DNI</th>
                 <th>Nombres</th>
                 <th>Apellidos</th>
+                <th>Fecha de Nacimiento</th>
                 <th>Correo</th>
                 <th>Vehículo</th>
                 <th>Garage</th>
@@ -81,6 +82,9 @@
             <label>Apellidos:</label>
             <input type="text" id="editApellidos" required><br><br>
 
+            <label>Fecha de Nacimiento:</label>
+            <input type="date" id="editfechaNacimiento" required><br><br>
+
             <label>Correo:</label>
             <input type="email" id="editCorreo" required><br><br>
 
@@ -93,6 +97,19 @@
             <button type="button" onclick="closeEditModal()" class="btn btn-home">Cancelar</button>
             <button type="submit" class="btn btn-edit">Guardar</button>
         </form>
+    </div>
+</div>
+
+<!-- MODAL ELIMINAR -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content" style="text-align:center;">
+        <h3>❗ Confirmar Eliminación</h3>
+        <p>¿Estás seguro que deseas eliminar este socio?</p>
+        <p><strong id="deleteNombre"></strong></p>
+
+        <br>
+        <button class="btn btn-home" onclick="closeDeleteModal()">Cancelar</button>
+        <button id="confirmDeleteBtn" class="btn btn-delete">Eliminar</button>
     </div>
 </div>
 
@@ -112,6 +129,7 @@ function mostrarSocios(socios) {
             <td>${s.dni}</td>
             <td>${s.nombres}</td>
             <td>${s.apellidos}</td>
+            <td>${s.fechaNacimiento}</td>
             <td>${s.correo}</td>
             <td>${s.vehiculo}</td>
             <td>${s.garage}</td>
@@ -130,6 +148,7 @@ async function editarSocio(dni) {
     editDni.value = s.dni;
     editNombres.value = s.nombres;
     editApellidos.value = s.apellidos;
+    editfechaNacimiento.value = s.fechaNacimiento;
     editCorreo.value = s.correo;
     editVehiculo.value = s.vehiculo;
     editGarage.value = s.garage;
@@ -143,6 +162,7 @@ document.getElementById('editForm').addEventListener('submit', async e => {
         dni: parseInt(editDni.value),
         nombres: editNombres.value,
         apellidos: editApellidos.value,
+        fechaNacimiento: editfechaNacimiento.value,
         correo: editCorreo.value,
         vehiculo: editVehiculo.value,
         garage: editGarage.value
@@ -154,20 +174,31 @@ document.getElementById('editForm').addEventListener('submit', async e => {
 
 function closeEditModal() { editModal.style.display='none'; }
 
+cargarSocios();
+
+let dniAEliminar = null;
+
 async function eliminarSocio(dni) {
-    if (confirm("¿Eliminar este socio?")) {
-        await fetch(`${API_URL}/${dni}`, { method:'DELETE' });
-        cargarSocios();
-    }
+    dniAEliminar = dni;
+
+    // obtenemos data para mostrar nombre en el modal
+    const res = await fetch(`${API_URL}/${dni}`);
+    const s = await res.json();
+    document.getElementById("deleteNombre").textContent = `${s.nombres} ${s.apellidos} (DNI: ${s.dni})`;
+
+    deleteModal.style.display = 'flex';
 }
 
-document.getElementById('searchInput').addEventListener('input', async e => {
-    const criterio = e.target.value.trim();
-    const res = await fetch(`${API_URL}/buscar?criterio=${criterio}`);
-    mostrarSocios(await res.json());
+document.getElementById("confirmDeleteBtn").addEventListener("click", async () => {
+    await fetch(`${API_URL}/${dniAEliminar}`, { method: 'DELETE' });
+    closeDeleteModal();
+    cargarSocios();
 });
 
-cargarSocios();
+function closeDeleteModal() {
+    deleteModal.style.display = 'none';
+}
+
 </script>
 </body>
 </html>

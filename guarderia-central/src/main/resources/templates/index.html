@@ -84,6 +84,16 @@
             box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
         }
 
+        .btn-tertiary {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+
+        .btn-tertiary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(56, 249, 215, 0.4);
+        }
+
         .icon {
             margin-right: 10px;
             font-size: 1.3em;
@@ -92,10 +102,11 @@
 </head>
 <body>
     <div class="container">
-        <h1> Guarderia Central</h1>
-        <p class="subtitle">Sistema de gestión la guarderia central de vehiculos con Spring Boot e Hibernate</p>
+        <h1>Guarderia Central</h1>
+        <p class="subtitle">Sistema de gestión de la guardería central de vehículos con Spring Boot e Hibernate</p>
         
         <div class="buttons-container">
+            <!-- Socios -->
             <a th:href="@{/lista-socios}" class="btn btn-primary">
                 <span class="icon">📋</span>
                 Ver Lista de Socios
@@ -104,6 +115,28 @@
             <a th:href="@{/agregar-socio}" class="btn btn-secondary">
                 <span class="icon">➕</span>
                 Agregar Nuevo Socio
+            </a>
+
+            <!-- Empleados -->
+            <a th:href="@{/empleados/lista-empleado}" class="btn btn-primary">
+                <span class="icon">👷</span>
+                Ver Lista de Empleados
+            </a>
+
+            <a th:href="@{/empleados/agregar-empleado}" class="btn btn-secondary">
+                <span class="icon">➕</span>
+                Agregar Nuevo Empleado
+            </a>
+
+            <!-- Zonas -->
+            <a th:href="@{/zonas}" class="btn btn-tertiary">
+                <span class="icon">🅿️</span>
+                Ver Lista de Zonas
+            </a>
+
+            <a th:href="@{/zonas/agregar}" class="btn btn-tertiary">
+                <span class="icon">➕</span>
+                Agregar Nueva Zona
             </a>
         </div>
     </div>
