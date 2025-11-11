@@ -46,15 +46,37 @@ public class SocioServiceImpl implements SocioService {
         if (socioRepository.findByCorreo(socio.getCorreo()).isPresent()) {
             throw new SocioException("Ya existe un socio con el correo " + socio.getCorreo());
         }
+
+        if(socio.getGarage()==null || !socio.getGarage().getCodigo()== null){
+            throw new SocioException("Debe seleccionar el garage.");
+        }
+
+        Garage garage = garageRepository.findById(socio.getGarage().getCodigo())
+                .orElseThrow(() -> new SocioException("Garage con código " + socio.getGarage().getCodigo() + " no encontrado"));
         
-        return socioRepository.save(socio);
+        if(garage.isOcupado){
+            throw new SocioException("El garage con código " +  garage.getCodigo() + " ya está ocupado");
+        }       
+
+        //Marcar garage como ocupado
+        garage.setOcupado(true);
+        garageRepository.save(garage);
+
+        //guardar socio
+        Socio nuevoSocio = socioRepository.save(socio);
+
+        log.info("Socio creado con garage ocupado: {}", garage.getCodigo());
+
+        return nuevoSocio;
     }
 
     @Override
-    public Socio actualizarSocio(Integer dni, Socio socio) {
+    public Socio actualizarSocio(Integer dni, Socio socioNuevo) {
         log.info("Actualizando socio con DNI: {}", dni);
         
         Socio socioExistente = obtenerSocioPorDni(dni);
+
+        
         
         // Verificar si el correo ya existe en otro socio
         socioRepository.findByCorreo(socio.getCorreo()).ifPresent(s -> {

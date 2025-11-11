@@ -1,15 +1,16 @@
 package com.guarderia.central.repository;
 
-import com.guarderia.central.entity.Zona;
+import com.guarderia.central.entity.Garage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 
 @Repository
-public interface ZonaRepository extends JpaRepository<Zona, String> {
+public interface GarageRepository JpaRepository<Garage, String> {
 
-    // Verificar si existe una zona por código
+    // Verificar si existe un garage por código
     boolean existsByCodigo(String codigo);
+
+    list<Garage> findByDisponibleTrue();
 
 }

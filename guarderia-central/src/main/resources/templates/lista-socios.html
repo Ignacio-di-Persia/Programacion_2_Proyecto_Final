@@ -92,7 +92,7 @@
             <input type="text" id="editVehiculo"><br><br>
 
             <label>Garage:</label>
-            <input type="text" id="editGarage"><br><br>
+            <select id="editGarage" required></select><br><br>
 
             <button type="button" onclick="closeEditModal()" class="btn btn-home">Cancelar</button>
             <button type="submit" class="btn btn-edit">Guardar</button>
@@ -115,6 +115,18 @@
 
 <script>
 const API_URL = '/guarderia-central/api/socios';
+const API_GARAGE = '/guarderia-central/api/garage';
+let GarageActuales = [];   
+
+async function cargarGarageEnSelect() {
+    const res = await fetch(API_GARAGE);
+    const garage = await res.json();
+    const select = document.getElementById("editGarage");
+
+    select.innerHTML = garage.map(g => 
+        `<option value="${g.codigo}">${g.codigo} - ${g.descripcion}</option>`
+    ).join('');
+}
 
 async function cargarSocios() {
     const res = await fetch(API_URL);

@@ -165,10 +165,13 @@
 
             <div class="form-group">
                 <label for="garage">Garage:</label>
-                <input type="text" id="garage" name="garage" placeholder="Ej: Garage A">
+                <select id="garage" name="garage" required>
+                <option value="">Seleccione un garage...</option>
+                </select>
             </div>
 
-            <button type="submit" class="btn-submit" id="submitBtn">Agregar Socio</button>
+            <button class="btn-submit" type="submit">Guardar Socio</button>
+
         </form>
     </div>
 
@@ -197,7 +200,18 @@
 
     <script>
         const API_URL = '/guarderia-central/api/socios';
+        const API_GARAGE = '/guarderia-central/api/garage/disponibles';
         let dniExistente = false;
+
+        async function cargarGaragesDisponibles() {
+        const res = await fetch(API_GARAGE);
+        const garages = await res.json();
+        const select = document.getElementById("garage");
+
+        select.innerHTML = `<option value="">Seleccione un garage...</option>` + 
+        garages.map(g => `<option value="${g.codigo}">${g.codigo}</option>`).join('');
+        }
+    cargarGaragesDisponibles();
 
         document.getElementById('dni').addEventListener('blur', async function() {
             const dni = this.value;

@@ -46,8 +46,9 @@ public class Socio {
     @Column(name = "vehiculo", length = 100)
     private String vehiculo;
 
-    @Column(name = "garage", length = 50)
-    private String garage;
+    @ManyToOne
+    @joincolumn(name="garage_codigo")
+    private Garage garage;
 
     @PrePersist
     public void prePersist() {
