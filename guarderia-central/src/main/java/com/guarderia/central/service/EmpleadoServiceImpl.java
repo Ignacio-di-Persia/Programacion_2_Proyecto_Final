@@ -1,19 +1,31 @@
 package com.guarderia.central.service;
 
+import com.guarderia.central.dto.EmpleadoDTO;
+import com.guarderia.central.dto.EmpleadoZonaDTO;
 import com.guarderia.central.entity.Empleado;
+import com.guarderia.central.entity.EmpleadoZona;
+import com.guarderia.central.entity.EmpleadoZonaId;
+import com.guarderia.central.entity.Zona;
 import com.guarderia.central.exception.EmpleadoException;
 import com.guarderia.central.repository.EmpleadoRepository;
-import com.guarderia.central.service.EmpleadoService;
+import com.guarderia.central.repository.ZonaRepository;
+
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EmpleadoServiceImpl implements EmpleadoService {
 
     private final EmpleadoRepository empleadoRepository;
+    private final ZonaRepository zonaRepository; 
+    private final ZonaService zonaService;
 
     @Override
     public List<Empleado> listar() {
@@ -40,24 +52,125 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     }
 
     @Override
-    public Empleado actualizarEmpleado(Long codigo, Empleado empleado){
-        log.info("Actualizando empleado con DNI: {}", codigo);
-        Empleado empleadoExistente = buscarPorId(codigo);
-        
-        // Verificar si el telefono ya existe en otro empleado
-        empleadoRepository.findByTelefono(empleado.getTelefono()).ifPresent(s -> {
-            if (!s.getDni().equals(codigo)) {
-                throw new EmpleadoException("El telefono " + empleado.getTelefono() + " ya está registrado en otro empleado");
-            }
-        });
-        
-        // Actualizar campos
-        empleadoExistente.setNombres(empleado.getNombres());
-        empleadoExistente.setApellidos(empleado.getApellidos());
-        empleadoExistente.setDireccion(empleado.getDireccion());
-        empleadoExistente.setTelefono(empleado.getTelefono());
-        empleadoExistente.setEspecialidad(empleado.getEspecialidad());
-        
-        return empleadoRepository.save(empleadoExistente);
+    public Empleado actualizarEmpleado(Long codigo, EmpleadoDTO dto) {
+    Empleado existente = buscarPorId(codigo);
+
+    // Actualizar datos básicos
+    existente.setNombres(dto.getNombres());
+    existente.setApellidos(dto.getApellidos());
+    existente.setDireccion(dto.getDireccion());
+    existente.setTelefono(dto.getTelefono());
+    existente.setEspecialidad(dto.getEspecialidad());
+
+    // Actualizar zonas
+    if (dto.getZonasAsignadas() != null) {
+        // Limpiar lista existente para evitar problemas de Hibernate
+        existente.getZonasAsignadas().clear();
+
+        List<EmpleadoZona> zonas = dto.getZonasAsignadas().stream()
+                .map(ezDTO -> {
+                    Zona zona = zonaService.obtenerZonaPorCodigo(ezDTO.getZonaCodigo());
+                    return EmpleadoZona.builder()
+                            .empleado(existente)
+                            .zona(zona)
+                            .vehiculosAsignados(ezDTO.getVehiculosAsignados())
+                            .build();
+                })
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        existente.getZonasAsignadas().addAll(zonas);
+    }
+
+    return guardar(existente);
+    }
+
+    // DTO
+    @Override
+    public List<EmpleadoDTO> listarDTO() {
+        return listar().stream().map(this::convertirADTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public EmpleadoDTO buscarDTO(Long codigo) {
+        return convertirADTO(buscarPorId(codigo));
+    }
+
+    @Override
+public Empleado guardarDTO(EmpleadoDTO dto) {
+    Empleado empleado;
+
+    if (dto.getCodigo() != null) {
+        // Editar empleado existente
+        empleado = buscarPorId(dto.getCodigo());
+    } else {
+        // Nuevo empleado
+        empleado = new Empleado();
+    }
+
+    // Datos comunes
+    empleado.setDni(dto.getDni());
+    empleado.setNombres(dto.getNombres());
+    empleado.setApellidos(dto.getApellidos());
+    empleado.setDireccion(dto.getDireccion());
+    empleado.setTelefono(dto.getTelefono());
+    empleado.setEspecialidad(dto.getEspecialidad());
+
+    // LIMPIAR la lista existente SIN reemplazarla
+    empleado.getZonasAsignadas().clear();
+
+    // REAGREGAR las zonas desde el DTO
+    if (dto.getZonasAsignadas() != null) {
+        for (EmpleadoDTO.ZonaAsignadaDTO zonaDTO : dto.getZonasAsignadas()) {
+
+            // Buscar la zona original
+            Zona zona = zonaRepository.findById(zonaDTO.getZonaCodigo())
+                    .orElseThrow(() -> new RuntimeException("Zona no encontrada: " + zonaDTO.getZonaCodigo()));
+
+            // Crear el vínculo empleado-zona
+            EmpleadoZona ez = new EmpleadoZona();
+            ez.setEmpleado(empleado);                       // Relación inversa correcta
+            ez.setZona(zona);
+            ez.setVehiculosAsignados(zonaDTO.getVehiculosAsignados());
+
+            // Agregar a la colección existente
+            empleado.getZonasAsignadas().add(ez);
+        }
+    }
+
+    return empleadoRepository.save(empleado);
+    
+    // Asignar zonas (tanto para nuevo como editar)
+    if(dto.getZonasAsignadas() != null) {
+        List<EmpleadoZona> zonas = dto.getZonasAsignadas().stream()
+            .map(ezDTO -> {
+                Zona zona = zonaService.obtenerZonaPorCodigo(ezDTO.getZonaCodigo());
+                return EmpleadoZona.builder()
+                        .empleado(empleado)
+                        .zona(zona)
+                        .vehiculosAsignados(ezDTO.getVehiculosAsignados())
+                        .build();
+            })
+            .collect(Collectors.toCollection(ArrayList::new)); // <-- mutable
+        empleado.setZonasAsignadas(zonas);
+    }
+
+    return empleadoRepository.save(empleado);
+}
+
+    private EmpleadoDTO convertirADTO(Empleado e) {
+    List<EmpleadoZonaDTO> zonas = e.getZonasAsignadas().stream()
+            .map(ez -> new EmpleadoZonaDTO(ez.getZona().getCodigo(), ez.getVehiculosAsignados()))
+            .toList();
+
+    return EmpleadoDTO.builder()
+            .codigo(e.getCodigo())
+            .dni(e.getDni())
+            .nombres(e.getNombres())
+            .apellidos(e.getApellidos())
+            .direccion(e.getDireccion())
+            .telefono(e.getTelefono())
+            .especialidad(e.getEspecialidad())
+            .zonasAsignadas(zonas)
+            .build();
     }
 }

@@ -1,12 +1,14 @@
 package com.guarderia.central.controller;
 
-import com.guarderia.central.entity.Empleado;
+import com.guarderia.central.dto.EmpleadoDTO;
 import com.guarderia.central.service.EmpleadoService;
 import com.guarderia.central.service.ZonaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -18,26 +20,34 @@ public class EmpleadoViewController {
 
     @GetMapping("/lista-empleado")
     public String listaEmpleado(Model model) {
-        model.addAttribute("empleados", empleadoService.listar());
+        List<EmpleadoDTO> empleados = empleadoService.listarDTO();
+        model.addAttribute("empleados", empleados);
         return "lista-empleados";
     }
 
     @GetMapping("/agregar-empleado")
     public String mostrarFormulario(Model model) {
-        model.addAttribute("empleado", new Empleado());
-        model.addAttribute("zonas", zonaService.listarZonas()); // Para dropdown de zonas
+        model.addAttribute("empleado", new EmpleadoDTO());
+        model.addAttribute("zonas", zonaService.listarZonas());
+        return "agregar-empleado";
+    }
+
+    @GetMapping("/editar-empleado/{id}")
+    public String mostrarEditar(@PathVariable Long id, Model model) {
+        model.addAttribute("empleado", empleadoService.buscarDTO(id));
+        model.addAttribute("zonas", zonaService.listarZonas());
         return "agregar-empleado";
     }
 
     @PostMapping
-    public String guardar(@ModelAttribute Empleado empleado) {
-        empleadoService.guardar(empleado);
+    public String guardar(@ModelAttribute EmpleadoDTO empleadoDTO) {
+        empleadoService.guardarDTO(empleadoDTO); // Guarda empleado y zonas en un solo paso
         return "redirect:/empleados/lista-empleado";
     }
 
     @GetMapping("/eliminar/{id}")
-    public String eliminar(@PathVariable("id") Long codigo) {
-        empleadoService.eliminar(codigo);
+    public String eliminar(@PathVariable Long id) {
+        empleadoService.eliminar(id);
         return "redirect:/empleados/lista-empleado";
     }
 }

@@ -11,16 +11,15 @@ import lombok.*;
 @Builder
 public class EmpleadoZona {
 
-    @EmbeddedId
-    private EmpleadoZonaId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne
-    @MapsId("empleadoCodigo")
     @JoinColumn(name = "empleado_codigo", referencedColumnName = "codigo")
     private Empleado empleado;
 
     @ManyToOne
-    @MapsId("zonaCodigo")
     @JoinColumn(name = "zona_codigo", referencedColumnName = "codigo")
     private Zona zona;
 

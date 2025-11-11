@@ -6,33 +6,16 @@
 <title>Agregar Empleado</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-    min-height:100vh; padding:20px; display:flex; justify-content:center; align-items:center;
-}
-.container {
-    max-width:600px; width:100%; background:white; border-radius:15px; padding:40px;
-    box-shadow:0 10px 40px rgba(0,0,0,0.2);
-}
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); min-height:100vh; padding:20px; display:flex; justify-content:center; align-items:center; }
+.container { max-width:600px; width:100%; background:white; border-radius:15px; padding:40px; box-shadow:0 10px 40px rgba(0,0,0,0.2); }
 h1 { text-align:center; margin-bottom:30px; color:#333; }
-.btn-home {
-    background:#6c757d; color:white; padding:10px 20px; border:none; border-radius:8px;
-    text-decoration:none; display:inline-block; margin-bottom:20px; font-weight:600;
-    transition:0.3s;
-}
+.btn-home { background:#6c757d; color:white; padding:10px 20px; border:none; border-radius:8px; text-decoration:none; display:inline-block; margin-bottom:20px; font-weight:600; transition:0.3s; }
 .btn-home:hover { background:#5a6268; }
 .form-group { margin-bottom:20px; }
 .form-group label { display:block; font-weight:600; margin-bottom:5px; }
-.form-group input, .form-group select {
-    width:100%; padding:12px; border:1px solid #ccc; border-radius:8px;
-    transition:0.3s;
-}
+.form-group input, .form-group select { width:100%; padding:12px; border:1px solid #ccc; border-radius:8px; transition:0.3s; }
 .form-group input:focus, .form-group select:focus { border-color:#667eea; outline:none; }
-.btn-submit {
-    width:100%; padding:15px; background:#667eea; color:white; border:none; border-radius:8px;
-    font-size:18px; font-weight:600; cursor:pointer; transition:0.3s;
-}
+.btn-submit { width:100%; padding:15px; background:#667eea; color:white; border:none; border-radius:8px; font-size:18px; font-weight:600; cursor:pointer; transition:0.3s; }
 .btn-submit:hover { background:#5a67d8; }
 .zona-item { margin-bottom:14px; padding-left:5px; }
 .vehiculos-input { margin-left:32px; margin-top:8px; width:80%; }
@@ -91,9 +74,10 @@ h1 { text-align:center; margin-bottom:30px; color:#333; }
 </div>
 
 <script>
-const API_EMPLEADOS = "/guarderia-central/api/empleados";
-const API_ZONAS = "/guarderia-central/api/zonas";
+const API_EMPLEADOS = "[[@{/api/empleados}]]";
+const API_ZONAS = "[[@{/api/zonas}]]";
 
+// Cargar zonas disponibles
 async function cargarZonas() {
     const res = await fetch(API_ZONAS);
     const zonas = await res.json();
@@ -107,32 +91,50 @@ async function cargarZonas() {
             </label>
             <input type="number" min="0" placeholder="Vehículos asignados" class="vehiculos-input" style="display:none;">`;
         cont.appendChild(div);
+
         const check = div.querySelector(".zona-check");
         const input = div.querySelector(".vehiculos-input");
-        check.addEventListener("change",()=>{input.style.display=check.checked?"block":"none";});
+        check.addEventListener("change", ()=> input.style.display = check.checked ? "block" : "none");
     });
 }
 cargarZonas();
 
-document.getElementById("empleadoForm").addEventListener("submit", async e=>{
+// Guardar empleado
+document.getElementById("empleadoForm").addEventListener("submit", async e => {
     e.preventDefault();
-    const empleado={
+    const empleado = {
         dni: parseInt(document.getElementById("dni").value),
         nombres: document.getElementById("nombres").value.trim(),
         apellidos: document.getElementById("apellidos").value.trim(),
         direccion: document.getElementById("direccion").value.trim()||null,
         telefono: document.getElementById("telefono").value.trim()||null,
         especialidad: document.getElementById("especialidad").value.trim()||null,
-        empleadosAsignados:[]
+        zonasAsignadas: []
     };
-    document.querySelectorAll(".zona-item").forEach(item=>{
-        const check=item.querySelector(".zona-check");
-        const input=item.querySelector(".vehiculos-input");
-        if(check.checked){ empleado.empleadosAsignados.push({id:{zonaCodigo:check.value}, zona:{codigo:check.value}, vehiculosAsignados:input.value?parseInt(input.value):0}); }
+
+    document.querySelectorAll(".zona-item").forEach(item => {
+        const check = item.querySelector(".zona-check");
+        const input = item.querySelector(".vehiculos-input");
+        if(check.checked){
+            empleado.zonasAsignadas.push({
+                zonaCodigo: check.value,
+                vehiculosAsignados: input.value ? parseInt(input.value) : 0
+            });
+        }
     });
-    const res = await fetch(API_EMPLEADOS,{method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(empleado)});
-    if(res.ok){ document.getElementById("successModal").style.display="flex"; }
+
+    const res = await fetch(API_EMPLEADOS,{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify(empleado)
+    });
+
+    if(res.ok){
+        document.getElementById("successModal").style.display="flex";
+    }
 });
+
+// Agregar otro empleado
 function agregarOtro(){
     document.getElementById("successModal").style.display="none";
     document.getElementById("empleadoForm").reset();

@@ -1,12 +1,19 @@
 package com.guarderia.central.controller;
 
+import com.guarderia.central.dto.EmpleadoDTO;
 import com.guarderia.central.entity.Empleado;
+import com.guarderia.central.dto.EmpleadoZonaDTO;
+import com.guarderia.central.entity.Empleado;
+import com.guarderia.central.entity.EmpleadoZona;
+import com.guarderia.central.entity.Zona;
 import com.guarderia.central.service.EmpleadoService;
+import com.guarderia.central.service.ZonaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -14,32 +21,52 @@ import java.util.List;
 public class EmpleadoRestController {
 
     private final EmpleadoService empleadoService;
+    private final ZonaService zonaService;
 
     @GetMapping
-    public List<Empleado> listar() {
-        return empleadoService.listar();
+    public List<EmpleadoDTO> listar() {
+        return empleadoService.listarDTO();
     }
 
     @GetMapping("/{id}")
-    public Empleado buscar(@PathVariable("id") Long codigo) {
-        return empleadoService.buscarPorId(codigo);
+    public EmpleadoDTO buscar(@PathVariable Long id) {
+        return empleadoService.buscarDTO(id);
     }
 
     @PostMapping
-    public Empleado crear(@RequestBody Empleado empleado) {
-        return empleadoService.guardar(empleado);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminar(@PathVariable("id") Long codigo) {
-        empleadoService.eliminar(codigo);
-        return ResponseEntity.ok().body("Empleado eliminado");
+    public EmpleadoDTO crear(@RequestBody EmpleadoDTO empleadoDTO) {
+     return convertToDTO(empleadoService.guardarDTO(empleadoDTO));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> editar(@PathVariable("id") Long codigo) {
-        empleadoService.actualizarEmpleado(codigo);
-        return ResponseEntity.ok().body("Empleado actualizado");
+    public EmpleadoDTO editar(@PathVariable Long id, @RequestBody EmpleadoDTO empleadoDTO) {
+        empleadoDTO.setCodigo(id);
+        return convertToDTO(empleadoService.guardarDTO(empleadoDTO));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminar(@PathVariable Long id) {
+        empleadoService.eliminar(id);
+        return ResponseEntity.ok("Empleado eliminado");
+    }
+
+    private EmpleadoDTO convertToDTO(Empleado e) {
+    List<EmpleadoZonaDTO> zonas = e.getZonasAsignadas().stream()
+            .map(ez -> new EmpleadoZonaDTO(
+                    ez.getZona().getCodigo(),
+                    ez.getVehiculosAsignados()
+            ))
+            .toList();
+
+    return EmpleadoDTO.builder()
+            .codigo(e.getCodigo())
+            .dni(e.getDni())
+            .nombres(e.getNombres())
+            .apellidos(e.getApellidos())
+            .direccion(e.getDireccion())
+            .telefono(e.getTelefono())
+            .especialidad(e.getEspecialidad())
+            .zonasAsignadas(zonas)
+            .build();
+}
 }

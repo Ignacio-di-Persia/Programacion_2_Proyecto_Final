@@ -46,6 +46,6 @@ public class Empleado {
     @Column(name = "especialidad", length = 100)
     private String especialidad;
 
-    @OneToMany(mappedBy = "empleado", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "empleado", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EmpleadoZona> zonasAsignadas = new ArrayList<>();
 }

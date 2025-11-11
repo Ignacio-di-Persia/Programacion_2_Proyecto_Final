@@ -106,14 +106,37 @@
         <p class="subtitle">Sistema de gestión de la guardería central de vehículos con Spring Boot e Hibernate</p>
         
         <div class="buttons-container">
-            <a th:href="@{/menu-socios/}" class="btn btn-primary">
-                👩🏽 Socios 👨🏽
+            <!-- Socios -->
+            <a th:href="@{/lista-socios}" class="btn btn-primary">
+                <span class="icon">📋</span>
+                Ver Lista de Socios
             </a>
-            <a th:href="@{/menu-empleados/}" class="btn btn-primary">
-                👷🏽‍♀️ Empleados 👷🏽‍♂️
+            
+            <a th:href="@{/agregar-socio}" class="btn btn-secondary">
+                <span class="icon">➕</span>
+                Agregar Nuevo Socio
             </a>
-            <a th:href="@{/menu-zonas/}" class="btn btn-primary">
-                🧩 Zonas 🧩
+
+            <!-- Empleados -->
+            <a th:href="@{/empleados/lista-empleado}" class="btn btn-primary">
+                <span class="icon">👷</span>
+                Ver Lista de Empleados
+            </a>
+
+            <a th:href="@{/empleados/agregar-empleado}" class="btn btn-secondary">
+                <span class="icon">➕</span>
+                Agregar Nuevo Empleado
+            </a>
+
+            <!-- Zonas -->
+            <a th:href="@{/zonas}" class="btn btn-tertiary">
+                <span class="icon">🅿️</span>
+                Ver Lista de Zonas
+            </a>
+
+            <a th:href="@{/zonas/agregar}" class="btn btn-tertiary">
+                <span class="icon">➕</span>
+                Agregar Nueva Zona
             </a>
         </div>
     </div>

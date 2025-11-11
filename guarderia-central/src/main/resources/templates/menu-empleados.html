@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guarderia Central - Inicio</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/menu.css}">
     <style>
         * {
             margin: 0;
@@ -102,20 +103,22 @@
 </head>
 <body>
     <div class="container">
-        <h1>Guarderia Central</h1>
-        <p class="subtitle">Sistema de gestión de la guardería central de vehículos con Spring Boot e Hibernate</p>
+        <h1>Menu Empleados</h1>
+        <!-- <p class="subtitle"></p> -->
         
         <div class="buttons-container">
-            <a th:href="@{/menu-socios/}" class="btn btn-primary">
-                👩🏽 Socios 👨🏽
+        <!-- Empleados -->
+            <a th:href="@{/empleados/lista-empleado}" class="btn btn-primary">
+                <span class="icon">👷</span>
+                Ver Lista de Empleados
             </a>
-            <a th:href="@{/menu-empleados/}" class="btn btn-primary">
-                👷🏽‍♀️ Empleados 👷🏽‍♂️
-            </a>
-            <a th:href="@{/menu-zonas/}" class="btn btn-primary">
-                🧩 Zonas 🧩
+
+            <a th:href="@{/empleados/agregar-empleado}" class="btn btn-secondary">
+                <span class="icon">➕</span>
+                Agregar Nuevo Empleado
             </a>
         </div>
+        <a th:href="@{/}" class="btn-back">🏠 Volver al menu principal</a>
     </div>
 </body>
 </html>

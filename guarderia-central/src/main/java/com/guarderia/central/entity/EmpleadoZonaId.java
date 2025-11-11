@@ -11,7 +11,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class EmpleadoZonaId implements Serializable {
 
-    @Column(name = "empleado_codigo")
+    @Column(name = "empleado_codigo") // <-- este nombre debe matchear con la FK real
     private Long empleadoCodigo;
 
     @Column(name = "zona_codigo")

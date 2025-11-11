@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guarderia Central - Inicio</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <style>
+    <link rel="stylesheet" th:href="@{/css/menu.css}">
+    <!-- <style>
         * {
             margin: 0;
             padding: 0;
@@ -98,23 +99,27 @@
             margin-right: 10px;
             font-size: 1.3em;
         }
-    </style>
+    </style> -->
 </head>
 <body>
     <div class="container">
-        <h1>Guarderia Central</h1>
-        <p class="subtitle">Sistema de gestión de la guardería central de vehículos con Spring Boot e Hibernate</p>
+        <h1>Menu Zonas</h1>
+        <!-- <p class="subtitle"></p> -->
         
         <div class="buttons-container">
-            <a th:href="@{/menu-socios/}" class="btn btn-primary">
-                👩🏽 Socios 👨🏽
+           <!-- Zonas -->
+            <a th:href="@{/zonas}" class="btn btn-tertiary">
+                <span class="icon">🅿️</span>
+                Ver Lista de Zonas
             </a>
-            <a th:href="@{/menu-empleados/}" class="btn btn-primary">
-                👷🏽‍♀️ Empleados 👷🏽‍♂️
+
+            <a th:href="@{/zonas/agregar}" class="btn btn-tertiary">
+                <span class="icon">➕</span>
+                Agregar Nueva Zona
             </a>
-            <a th:href="@{/menu-zonas/}" class="btn btn-primary">
-                🧩 Zonas 🧩
-            </a>
+        </div>
+        <div class='buttons-container'>
+            <a th:href="@{/}" class="btn-back">🏠 Volver al menu principal</a>
         </div>
     </div>
 </body>

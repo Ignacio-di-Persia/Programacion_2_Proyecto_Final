@@ -18,6 +18,9 @@ public interface EmpleadoRepository extends JpaRepository<Empleado, Long> {
     // Verificar si existe un DNI
     boolean existsByDni(Integer dni);
 
+    // Buscar por teléfono
+    Optional<Empleado> findByTelefono(String telefono);
+
     // Buscar por apellidos (búsqueda parcial, case insensitive)
     @Query("SELECT e FROM Empleado e WHERE LOWER(e.apellidos) LIKE LOWER(CONCAT(:apellido, '%'))")
     List<Empleado> findByApellidosStartingWithIgnoreCase(@Param("apellido") String apellido);
