@@ -3,17 +3,12 @@ package com.guarderia.central.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @Slf4j
+@RequestMapping("/socios")
 public class SocioViewController {
-
-    // Página principal (index)
-    @GetMapping({"/", "/index"})
-    public String index() {
-        log.info("Accediendo a la página principal");
-        return "index";
-    }
 
     // Página de lista de socios
     @GetMapping("/lista-socios")

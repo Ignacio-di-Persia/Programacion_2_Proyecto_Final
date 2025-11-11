@@ -1,6 +1,7 @@
 package com.guarderia.central.controller;
 
 import com.guarderia.central.entity.Zona;
+import com.guarderia.central.repository.ZonaRepository;
 import com.guarderia.central.service.ZonaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

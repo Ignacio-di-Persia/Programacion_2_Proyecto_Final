@@ -77,9 +77,11 @@ tr:hover { background:#f2f2f2; }
             <label>Especialidad:</label>
             <input type="text" id="editEspecialidad"><br><br>
 
-            <p style="font-weight:bold; margin-top:10px; color:#555;">
-                🛑 Las zonas y vehículos asignados no se modifican desde esta pantalla.
-            </p>
+            <label>Zona asignada:</label>
+            <select id="editZona" required></select><br><br>
+
+            <label>Cantidad de vehículos asignados:</label>
+            <input type="number" id="editVehiculos" min="0" value="0"><br><br>
 
             <button type="button" onclick="closeEditModal()" class="btn btn-home">Cancelar</button>
             <button type="submit" class="btn btn-edit">Guardar</button>
@@ -101,11 +103,27 @@ tr:hover { background:#f2f2f2; }
 
 <script>
 const API_URL = '/guarderia-central/api/empleados';
+const API_ZONAS = '/guarderia-central/api/zonas';
 let codigoAEliminar = null;
-let zonasActuales = [];
+let zonasActuales = []; 
+
+async function cargarZonasEnSelect() {
+    const res = await fetch(API_ZONAS);
+    const zonas = await res.json();
+    const select = document.getElementById("editZona");
+
+    select.innerHTML = zonas.map(z => 
+        `<option value="${z.codigo}">${z.codigo} - ${z.descripcion}</option>`
+    ).join('');
+}
+
+
 
 // Abrir modal editar
-function openEditModal(empleado) {
+async function openEditModal(empleado) {
+
+    await cargarZonasEnSelect(); // <<< NUEVO
+
     document.getElementById("editCodigo").value = empleado.codigo;
     document.getElementById("editDni").value = empleado.dni;
     document.getElementById("editNombres").value = empleado.nombres;
@@ -115,6 +133,12 @@ function openEditModal(empleado) {
     document.getElementById("editEspecialidad").value = empleado.especialidad;
 
     zonasActuales = empleado.zonasAsignadas || [];
+
+    // Se muestra la zona asignada
+    if (zonasActuales.length > 0) {
+        document.getElementById("editZona").value = zonasActuales[0].zonaCodigo;
+        document.getElementById("editVehiculos").value = zonasActuales[0].vehiculosAsignados;
+    }
 
     document.getElementById("editModal").style.display = "block";
 }
@@ -170,6 +194,9 @@ function closeDeleteModal(){ document.getElementById("deleteModal").style.displa
 document.getElementById("editForm").addEventListener("submit", async e=>{
     e.preventDefault();
 
+    const zonaSeleccionada = document.getElementById("editZona").value;
+    const vehiculos = parseInt(document.getElementById("editVehiculos").value);
+
     const empleado = {
         codigo: parseInt(document.getElementById("editCodigo").value),
         dni: parseInt(document.getElementById("editDni").value),
@@ -178,7 +205,11 @@ document.getElementById("editForm").addEventListener("submit", async e=>{
         direccion: document.getElementById("editDireccion").value.trim()||null,
         telefono: document.getElementById("editTelefono").value.trim()||null,
         especialidad: document.getElementById("editEspecialidad").value.trim()||null,
-        zonasAsignadas: zonasActuales   // SE MANTIENEN IGUAL
+
+        // AHORA SÍ SE MODIFICA LA ZONA Y CANT VEHICULOS
+        zonasAsignadas: [
+            { zonaCodigo: zonaSeleccionada, vehiculosAsignados: vehiculos }
+        ]
     };
 
     await fetch(`${API_URL}/${empleado.codigo}`, {
@@ -186,6 +217,7 @@ document.getElementById("editForm").addEventListener("submit", async e=>{
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify(empleado)
     });
+
     closeEditModal();
     cargarEmpleados();
 });

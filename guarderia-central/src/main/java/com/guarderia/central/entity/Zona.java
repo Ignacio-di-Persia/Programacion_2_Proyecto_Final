@@ -7,6 +7,8 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "zonas")
 @Data
@@ -33,5 +35,6 @@ public class Zona {
     private Double ancho;
 
     @OneToMany(mappedBy = "zona", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<EmpleadoZona> empleadosAsignados = new ArrayList<>();
 }

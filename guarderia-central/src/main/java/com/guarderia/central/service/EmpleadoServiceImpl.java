@@ -96,18 +96,17 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     }
 
     @Override
-public Empleado guardarDTO(EmpleadoDTO dto) {
+    public Empleado guardarDTO(EmpleadoDTO dto) {
+
     Empleado empleado;
 
     if (dto.getCodigo() != null) {
-        // Editar empleado existente
         empleado = buscarPorId(dto.getCodigo());
     } else {
-        // Nuevo empleado
         empleado = new Empleado();
     }
 
-    // Datos comunes
+    // Datos básicos
     empleado.setDni(dto.getDni());
     empleado.setNombres(dto.getNombres());
     empleado.setApellidos(dto.getApellidos());
@@ -115,47 +114,26 @@ public Empleado guardarDTO(EmpleadoDTO dto) {
     empleado.setTelefono(dto.getTelefono());
     empleado.setEspecialidad(dto.getEspecialidad());
 
-    // LIMPIAR la lista existente SIN reemplazarla
+    // Limpiar asignaciones anteriores (si las hubiera)
     empleado.getZonasAsignadas().clear();
 
-    // REAGREGAR las zonas desde el DTO
     if (dto.getZonasAsignadas() != null) {
-        for (EmpleadoDTO.ZonaAsignadaDTO zonaDTO : dto.getZonasAsignadas()) {
+        for (EmpleadoZonaDTO zonaDTO : dto.getZonasAsignadas()) {
 
-            // Buscar la zona original
             Zona zona = zonaRepository.findById(zonaDTO.getZonaCodigo())
                     .orElseThrow(() -> new RuntimeException("Zona no encontrada: " + zonaDTO.getZonaCodigo()));
 
-            // Crear el vínculo empleado-zona
             EmpleadoZona ez = new EmpleadoZona();
-            ez.setEmpleado(empleado);                       // Relación inversa correcta
+            ez.setEmpleado(empleado);
             ez.setZona(zona);
             ez.setVehiculosAsignados(zonaDTO.getVehiculosAsignados());
 
-            // Agregar a la colección existente
             empleado.getZonasAsignadas().add(ez);
         }
     }
 
     return empleadoRepository.save(empleado);
-    
-    // Asignar zonas (tanto para nuevo como editar)
-    if(dto.getZonasAsignadas() != null) {
-        List<EmpleadoZona> zonas = dto.getZonasAsignadas().stream()
-            .map(ezDTO -> {
-                Zona zona = zonaService.obtenerZonaPorCodigo(ezDTO.getZonaCodigo());
-                return EmpleadoZona.builder()
-                        .empleado(empleado)
-                        .zona(zona)
-                        .vehiculosAsignados(ezDTO.getVehiculosAsignados())
-                        .build();
-            })
-            .collect(Collectors.toCollection(ArrayList::new)); // <-- mutable
-        empleado.setZonasAsignadas(zonas);
     }
-
-    return empleadoRepository.save(empleado);
-}
 
     private EmpleadoDTO convertirADTO(Empleado e) {
     List<EmpleadoZonaDTO> zonas = e.getZonasAsignadas().stream()

@@ -15,7 +15,7 @@ public class ZonaViewController {
 
     private final ZonaService zonaService;
 
-    @GetMapping
+    @GetMapping("/listar")
     public String listaZonas(Model model) {
         model.addAttribute("zonas", zonaService.listarZonas());
         return "lista-zonas";
