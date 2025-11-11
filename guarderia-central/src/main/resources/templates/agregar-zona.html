@@ -51,7 +51,7 @@ input:focus { border-color:#667eea; outline:none; }
     <button type="submit" class="btn-submit">Guardar Zona</button>
 </form>
 
-<a th:href="@{/zonas}" class="btn-back">⬅ Volver a Zonas</a> <!--/guarderia-central/zonas-->
+<a th:href="@{/menu-zonas}" class="btn-back">⬅ Volver a Zonas</a> <!--/guarderia-central/zonas-->
 </div>
 
 <script>
@@ -76,7 +76,7 @@ document.getElementById("zonaForm").addEventListener("submit", async e => {
 
     if(res.ok){
         alert("Zona guardada!");
-        window.location.href="/guarderia-central/zonas";
+        window.location.href="/guarderia-central/menu-zonas";
     }else{
         alert("Error al guardar la zona!");
     }
