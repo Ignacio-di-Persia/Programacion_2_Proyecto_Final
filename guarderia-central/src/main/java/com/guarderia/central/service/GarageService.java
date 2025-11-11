@@ -15,5 +15,5 @@ public interface GarageService {
 
     boolean existeGarage(Long id);
 
-    
+    List<Garage> listarGaragesDisponibles();
 }

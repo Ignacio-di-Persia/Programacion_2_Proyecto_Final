@@ -2,10 +2,11 @@ package com.guarderia.central.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.LocalDate;
 
 @Entity
-@Table(name = "socio_garage")  
-@data
+@Table(name = "socio_garage")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -16,7 +17,7 @@ public class SocioGarage {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "socio_codigo", referencedColumnName = "codigo")
+    @JoinColumn(name = "socio_dni", referencedColumnName = "dni")
     private Socio socio;
 
     @ManyToOne
@@ -24,5 +25,5 @@ public class SocioGarage {
     private Garage garage;
 
     @Column(name = "fecha_asignacion")
-    private java.time.LocalDate fechaAsignacion;
+    private LocalDate fechaAsignacion;
 }

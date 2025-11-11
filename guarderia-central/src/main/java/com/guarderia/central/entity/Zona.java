@@ -35,4 +35,7 @@ public class Zona {
     @OneToMany(mappedBy = "zona", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<EmpleadoZona> empleadosAsignados = new ArrayList<>();
+
+    @OneToMany(mappedBy = "zona")
+    private List<Garage> garages = new ArrayList<>();
 }

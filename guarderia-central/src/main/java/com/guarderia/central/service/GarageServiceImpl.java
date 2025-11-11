@@ -4,7 +4,7 @@ import com.guarderia.central.entity.Garage;
 import java.util.List;
 
 @Service
-@requiredargsconstructor
+@RequiredArgsConstructor
 @Slf4j
 public class GarageServiceImpl implements GarageService {
 
@@ -40,6 +40,8 @@ public class GarageServiceImpl implements GarageService {
         return garageRepository.existsById(id);
     }
 
-    
+    @Override
+    public List<Garage> listarGaragesDisponibles() {
+        return garageRepository.findByOcupadoFalse();
 
 }

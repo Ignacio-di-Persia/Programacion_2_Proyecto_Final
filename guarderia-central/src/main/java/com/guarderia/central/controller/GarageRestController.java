@@ -6,11 +6,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
-
-@restController
+@RestController
 @RequestMapping("/api/garages") 
-@requiredArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class GarageRestController {
 
@@ -21,7 +21,7 @@ public class GarageRestController {
         return garageService.listarGarages();
     }
 
-    @getmapping("/disponibles")
+    @GetMapping("/disponibles")
     public List<Garage> listarGarageDisponibles(){
         return garageService.listarGaragesDisponibles();
     }

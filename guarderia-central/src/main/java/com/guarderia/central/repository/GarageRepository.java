@@ -6,11 +6,11 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface GarageRepository JpaRepository<Garage, String> {
+public interface GarageRepository extends JpaRepository<Garage, String> {
 
     // Verificar si existe un garage por código
     boolean existsByCodigo(String codigo);
 
-    list<Garage> findByDisponibleTrue();
+    List<Garage> findByDisponibleTrue();
 
 }

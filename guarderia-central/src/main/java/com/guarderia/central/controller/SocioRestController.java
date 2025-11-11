@@ -1,6 +1,5 @@
 package com.guarderia.central.controller;
 
-
 import com.guarderia.central.entity.Socio;
 import com.guarderia.central.service.SocioService;
 import jakarta.validation.Valid;
@@ -39,19 +38,26 @@ public class SocioRestController {
         return ResponseEntity.ok(socio);
     }
 
-    // POST - Crear nuevo socio
+    // POST - Crear nuevo socio con garage
     @PostMapping
-    public ResponseEntity<Socio> crearSocio(@Valid @RequestBody Socio socio) {
-        log.info("POST /api/socios - Creando socio: {}", socio);
-        Socio nuevoSocio = socioService.crearSocio(socio);
+    public ResponseEntity<Socio> crearSocio(
+            @Valid @RequestBody Socio socio,
+            @RequestParam String garageCodigo) {
+
+        log.info("POST /api/socios - Creando socio: {}, Garage: {}", socio, garageCodigo);
+        Socio nuevoSocio = socioService.crearSocio(socio, garageCodigo);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoSocio);
     }
 
-    // PUT - Actualizar socio
+    // PUT - Actualizar socio con garage
     @PutMapping("/{dni}")
-    public ResponseEntity<Socio> actualizarSocio(@PathVariable Integer dni,@Valid @RequestBody Socio socio) {
-        log.info("PUT /api/socios/{} - Actualizando socio", dni);
-        Socio socioActualizado = socioService.actualizarSocio(dni, socio);
+    public ResponseEntity<Socio> actualizarSocio(
+            @PathVariable Integer dni,
+            @Valid @RequestBody Socio socio,
+            @RequestParam String garageCodigo) {
+
+        log.info("PUT /api/socios/{} - Actualizando socio: {}, Garage: {}", dni, socio, garageCodigo);
+        Socio socioActualizado = socioService.actualizarSocio(dni, socio, garageCodigo);
         return ResponseEntity.ok(socioActualizado);
     }
 
@@ -60,11 +66,10 @@ public class SocioRestController {
     public ResponseEntity<Map<String, String>> eliminarSocio(@PathVariable Integer dni) {
         log.info("DELETE /api/socios/{} - Eliminando socio", dni);
         socioService.eliminarSocio(dni);
-        
+
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Socio eliminado exitosamente");
-        response.put("dni", dni.toString());
-        
+        response.put("message", "Socio eliminado correctamente");
+
         return ResponseEntity.ok(response);
     }
 
@@ -73,10 +78,10 @@ public class SocioRestController {
     public ResponseEntity<Map<String, Boolean>> existeDni(@PathVariable Integer dni) {
         log.info("GET /api/socios/existe/{} - Verificando DNI", dni);
         boolean existe = socioService.existeDni(dni);
-        
+
         Map<String, Boolean> response = new HashMap<>();
         response.put("existe", existe);
-        
+
         return ResponseEntity.ok(response);
     }
 
