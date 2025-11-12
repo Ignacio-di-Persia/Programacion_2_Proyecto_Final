@@ -1,6 +1,12 @@
 package com.guarderia.central.service;
 
 import com.guarderia.central.entity.Garage;
+import com.guarderia.central.exception.GarageNotFoundException;
+import com.guarderia.central.repository.GarageRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
@@ -43,5 +49,10 @@ public class GarageServiceImpl implements GarageService {
     @Override
     public List<Garage> listarGaragesDisponibles() {
         return garageRepository.findByOcupadoFalse();
+    }
 
+    @Override
+    public List<Garage> obtenerGaragesPorZona(String codigoZona) {
+        return garageRepository.findByZonaCodigo(codigoZona); 
+    }
 }

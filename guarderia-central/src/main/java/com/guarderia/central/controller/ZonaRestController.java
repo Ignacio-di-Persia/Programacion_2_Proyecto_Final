@@ -1,11 +1,15 @@
 package com.guarderia.central.controller;
 
+import com.guarderia.central.entity.Garage;
 import com.guarderia.central.entity.Zona;
 import com.guarderia.central.repository.ZonaRepository;
+import com.guarderia.central.service.GarageService;
+import com.guarderia.central.service.GarageServiceImpl;
 import com.guarderia.central.service.ZonaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -19,6 +23,7 @@ import java.util.Map;
 public class ZonaRestController {
 
     private final ZonaService zonaService;
+    private final GarageService garageService;
 
     @GetMapping
     public List<Zona> listarZonas() {
@@ -49,4 +54,21 @@ public class ZonaRestController {
         response.put("message", "Zona eliminada con éxito");
         return ResponseEntity.ok(response);
     }
+
+        // Método para mostrar la lista de garages de una zona
+         @GetMapping("/{codigo}/lista-garage")
+        public Model BuscarGaragesZonas(@PathVariable String codigo, Model model) {
+        // Obtener la zona por código
+        Zona zona = zonaService.obtenerZonaPorCodigo(codigo);
+       /* if (zona == null) */ 
+            // Obtener los garages asociados a esa zona
+            List<Garage> garages = garageService.obtenerGaragesPorZona(codigo); 
+            model.addAttribute("zona", zona); // Agregar la zona al modelo
+            model.addAttribute("garages", garages); // Agregar los garages al modelo
+    
+            return model; // Nombre de la vista Thymeleaf donde se mostrarán los garages
+        
+
+    }
+
 }

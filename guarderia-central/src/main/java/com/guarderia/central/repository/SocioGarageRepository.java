@@ -8,15 +8,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.guarderia.central.entity.Socio;
 import java.util.List;
 
-@repository
+@Repository
 public interface SocioGarageRepository extends JpaRepository<SocioGarage, SocioGarageId>{
 
+
+
     // Garages asignados a un socio
-    List<SocioGarage> findBySocioCodigo(Long socioCodigo);
+    List<SocioGarage> findBySocioDni(Long socioDni);
 
     // Socios asignados a un garage
     List<SocioGarage> findByGarageCodigo(String garageCodigo);
 
     // Buscar asignación específica
-    SocioGarage findBySocioCodigoAndGarageCodigo(Long socioCodigo, String garageCodigo);
+    SocioGarage findBySocioDniAndGarageCodigo(Long socioDni, String garageCodigo);
 }

@@ -49,12 +49,12 @@ tr:hover { background:#f2f2f2; }
             <td th:text="${zona.profundidad}"></td>
             <td th:text="${zona.ancho}"></td>
             <td>
-                <a th:href="@{'/guarderia-central/zonas/' + ${zona.codigo} + '/detalle'}" class="btn btn-view">🔍 Ver Garages</a>
+                <a th:href="@{'/zonas/' + ${zona.codigo} + '/detalle'}" class="btn btn-view">🔍 Ver Garages</a>
             </td>
         </tr>
     </tbody>
 </table>
-<a href="/guarderia-central/zonas/agregar" class="btn btn-add">➕ Agregar Zona</a>
+<a th:href="@{/guarderia-central/zonas/agregar}" class="btn btn-add">➕ Agregar Zona</a>
 </div>
 </body>
 </html>

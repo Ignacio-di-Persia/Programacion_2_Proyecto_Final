@@ -17,7 +17,7 @@ public class GarageViewController {
 
     @GetMapping("/listar")
     public String listaGarage(Model model) {
-        model.addAttribute("garage", GarageService.listarGarage());
+        model.addAttribute("garage", GarageService.listarGarages());
         return "lista-garage";
      }   
 

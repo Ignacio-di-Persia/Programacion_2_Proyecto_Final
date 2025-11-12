@@ -16,4 +16,6 @@ public interface GarageService {
     boolean existeGarage(Long id);
 
     List<Garage> listarGaragesDisponibles();
+
+    List<Garage> obtenerGaragesPorZona(String codigoZona);
 }

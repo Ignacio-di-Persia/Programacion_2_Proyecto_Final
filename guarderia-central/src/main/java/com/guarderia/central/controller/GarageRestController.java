@@ -23,7 +23,8 @@ public class GarageRestController {
 
     @GetMapping("/disponibles")
     public List<Garage> listarGarageDisponibles(){
-        return garageService.listarGaragesDisponibles();
+        List<Garage> disponibles = garageService.listarGaragesDisponibles();  // Este método debe ser implementado en tu servicio
+        return ResponseEntity.ok(disponibles);
     }
 
     @GetMapping("/{id}")

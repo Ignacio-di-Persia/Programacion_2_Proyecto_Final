@@ -11,6 +11,8 @@ public interface GarageRepository extends JpaRepository<Garage, String> {
     // Verificar si existe un garage por código
     boolean existsByCodigo(String codigo);
 
-    List<Garage> findByDisponibleTrue();
+    List<Garage> findByOcupadoFalse();
+
+    List<Garage> findByZonaCodigo(String codigoZona);
 
 }

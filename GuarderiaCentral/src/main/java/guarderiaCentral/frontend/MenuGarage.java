@@ -95,7 +95,7 @@ public class MenuGarage {
         System.out.print("Ingrese Codigo Garage: ");
         int Codigo = sc.nextInt();
         sc.nextLine();
-        System.out.println(dao.buscarPorCodigo(Codigo));
+        System.out.println(dao.obtenerZonaPorCodigo(Codigo));
     }
 
 }

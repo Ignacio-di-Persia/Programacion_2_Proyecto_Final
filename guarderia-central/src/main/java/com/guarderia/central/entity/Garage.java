@@ -18,7 +18,7 @@ public class Garage {
     @Id
     @Column(name = "codigo", nullable = false, length = 10)
     @NotBlank
-    private String codigo; // Ej: "GARAGE001"
+    private String codigo; 
 
     @Column(name = "ocupado", nullable = false)
     private boolean ocupado;

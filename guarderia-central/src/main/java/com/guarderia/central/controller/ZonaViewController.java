@@ -2,6 +2,7 @@ package com.guarderia.central.controller;
 
 import com.guarderia.central.entity.Zona;
 import com.guarderia.central.service.ZonaService;
+import com.guarderia.central.service.ZonaServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,9 +31,9 @@ public class ZonaViewController {
 
     @GetMapping("/{codigo}/detalle")
     public String verDetalleZona(@PathVariable String codigo, Model model) {
-        Zona zona = zonaService.buscarPorCodigo(codigo);
+        Zona zona = zonaService.obtenerZonaPorCodigo(codigo);
         model.addAttribute("zona", zona);
         model.addAttribute("garages", zona.getGarages());
-        return "detalle-zona";
+        return "lista-garage";
     }
 }
