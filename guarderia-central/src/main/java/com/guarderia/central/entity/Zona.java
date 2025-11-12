@@ -6,6 +6,7 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "zonas")
@@ -37,5 +38,6 @@ public class Zona {
     private List<EmpleadoZona> empleadosAsignados = new ArrayList<>();
 
     @OneToMany(mappedBy = "zona")
+    @JsonManagedReference
     private List<Garage> garages = new ArrayList<>();
 }

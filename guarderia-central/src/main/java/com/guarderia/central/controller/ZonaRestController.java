@@ -57,7 +57,7 @@ public class ZonaRestController {
 
         // Método para mostrar la lista de garages de una zona
          @GetMapping("/{codigo}/lista-garage")
-        public Model BuscarGaragesZonas(@PathVariable String codigo, Model model) {
+        public String BuscarGaragesZonas(@PathVariable String codigo, Model model) {
         // Obtener la zona por código
         Zona zona = zonaService.obtenerZonaPorCodigo(codigo);
        /* if (zona == null) */ 
@@ -66,7 +66,7 @@ public class ZonaRestController {
             model.addAttribute("zona", zona); // Agregar la zona al modelo
             model.addAttribute("garages", garages); // Agregar los garages al modelo
     
-            return model; // Nombre de la vista Thymeleaf donde se mostrarán los garages
+            return "lista-garage"; // Nombre de la vista Thymeleaf donde se mostrarán los garages
         
 
     }

@@ -5,6 +5,8 @@ import lombok.*;
 import jakarta.validation.constraints.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -29,5 +31,6 @@ public class Garage {
 
     @ManyToOne
     @JoinColumn(name = "zona_codigo")
+    @JsonBackReference
     private Zona zona;
 }
