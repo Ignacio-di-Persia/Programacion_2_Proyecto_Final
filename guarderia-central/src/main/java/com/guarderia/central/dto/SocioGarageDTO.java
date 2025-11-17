@@ -1,5 +1,7 @@
 package com.guarderia.central.dto;
 
+import lombok.*;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

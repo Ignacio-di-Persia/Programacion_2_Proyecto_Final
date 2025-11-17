@@ -10,7 +10,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface SocioRepository extends JpaRepository<Socio, Integer> {
+public interface SocioRepository extends JpaRepository<Socio, Long> {
+
+    // Buscar por ID
+    Optional<Socio> findById(Long id);
 
     // Buscar por DNI
     Optional<Socio> findByDni(Integer dni);

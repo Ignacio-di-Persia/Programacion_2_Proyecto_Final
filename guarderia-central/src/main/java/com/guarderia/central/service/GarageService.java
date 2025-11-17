@@ -7,13 +7,13 @@ public interface GarageService {
 
     List<Garage> listarGarages();
 
-    Garage obtenerGaragePorId(Long id);
+    Garage obtenerGaragePorId(String id);
 
     Garage guardarGarage(Garage garage);
 
-    void eliminarGarage(Long id);
+    void eliminarGarage(String id);
 
-    boolean existeGarage(Long id);
+    boolean existeGarage(String id);
 
     List<Garage> listarGaragesDisponibles();
 

@@ -16,8 +16,9 @@ public class SocioGarage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     @ManyToOne
-    @JoinColumn(name = "socio_dni", referencedColumnName = "dni")
+    @JoinColumn(name = "socio_codigo", referencedColumnName = "codigo")
     private Socio socio;
 
     @ManyToOne

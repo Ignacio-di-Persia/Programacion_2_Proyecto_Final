@@ -2,6 +2,10 @@ package com.guarderia.central.controller;
 
 import com.guarderia.central.entity.Socio;
 import com.guarderia.central.service.SocioService;
+import com.guarderia.central.service.GarageService;
+import com.guarderia.central.dto.SocioDTO;
+import com.guarderia.central.dto.SocioGarageDTO;
+import lombok.RequiredArgsConstructor;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +20,65 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/socios")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 @Slf4j
 public class SocioRestController {
 
-    @Autowired
-    private SocioService socioService;
+    private final SocioService socioService;
+    private final GarageService garageService;
 
+    
+    @GetMapping
+    public List<SocioDTO> listar() {
+        return socioService.listarDTO();
+    }
+
+    @GetMapping("/{id}")
+    public SocioDTO buscar(@PathVariable Long id) {
+        return socioService.buscarDTO(id);
+    }
+
+    @PostMapping
+    public SocioDTO crear(@RequestBody SocioDTO socioDTO) {
+        return socioService.guardarDTO(socioDTO);
+    }
+
+    @PostMapping("/guardar")
+    public ResponseEntity<SocioDTO> guardar(@RequestBody SocioDTO dto){
+        return ResponseEntity.ok(socioService.guardarDTO(dto)); 
+    }
+
+    @PutMapping("/{id}")
+    public SocioDTO editar(@PathVariable Long id, @RequestBody SocioDTO socioDTO) {
+        socioDTO.setCodigo(id);
+        return socioService.guardarDTO(socioDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminar(@PathVariable Long id) {
+        socioService.eliminar(id);
+        return ResponseEntity.ok("Socio eliminado");
+    }
+
+    private SocioDTO convertToDTO(Socio s) {
+        List<SocioGarageDTO> garages = s.getGaragesPropios().stream()
+                .map(sg -> new SocioGarageDTO(
+                        sg.getGarage().getCodigo()
+                ))
+                .toList();
+
+        return SocioDTO.builder()
+                .codigo(s.getCodigo())
+                .dni(s.getDni())
+                .nombres(s.getNombres())
+                .apellidos(s.getApellidos())
+                .direccion(s.getDireccion())
+                .telefono(s.getTelefono())
+                .garagePropios(garages)
+                .build();
+    }
+
+  /* Metodos sin DTO
     // GET - Obtener todos los socios
     @GetMapping
     public ResponseEntity<List<Socio>> obtenerTodos() {
@@ -108,4 +165,5 @@ public class SocioRestController {
         List<Socio> socios = socioService.buscarPorDniParcial(dniPrefix);
         return ResponseEntity.ok(socios);
     }
+ */
 }

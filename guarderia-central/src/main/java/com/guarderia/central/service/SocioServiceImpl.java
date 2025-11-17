@@ -4,6 +4,12 @@ import com.guarderia.central.entity.Garage;
 import com.guarderia.central.entity.Socio;
 import com.guarderia.central.exception.SocioException;
 import com.guarderia.central.repository.SocioRepository;
+import com.guarderia.central.repository.GarageRepository;
+import com.guarderia.central.dto.SocioDTO;
+import com.guarderia.central.dto.SocioGarageDTO;
+import com.guarderia.central.entity.SocioGarage;
+import com.guarderia.central.service.GarageService; 
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,9 +24,102 @@ import java.util.List;
 public class SocioServiceImpl implements SocioService {
 
     private final SocioRepository socioRepository;
-    private final SocioGarageService socioGarageService;
-    private final GarageService garageService; // si tenés servicios de Garage
+    private final GarageRepository garageRepository;
+    
+    @Override
+    public List<Socio> listar(){
+        return socioRepository.findAll();
+    }
 
+    @Override
+    public Socio buscarPorId(Long codigo){
+        return socioRepository.findById(codigo)
+                .orElseThrow(() -> new SocioException("Socio no encontrado")); 
+    }
+
+    @Override
+    public Socio guardar(Socio socio){
+        return socioRepository.save(socio);
+    }
+
+    @Override
+    public void eliminar(Long codigo){
+        if (!socioRepository.existsById(codigo)){
+            throw new SocioException("El socio no existe");
+        }
+        socioRepository.deleteById(codigo);
+    }   
+
+    @Override
+    public List<SocioDTO> listarDTO (){
+        return listar().stream().map(this::convertirADTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public SocioDTO buscarDTO (Long codigo){
+        return convertirADTO(buscarPorId(codigo));
+    }
+
+    @Override
+    public SocioDTO guardarDTO (SocioDTO dto){
+
+        Socio socio;
+
+        if(dto.getCodigo() != null) {
+            socio = buscarPorId(dto.getCodigo());
+        } else {
+            socio = new Socio();
+        }
+
+        //Datos basicos
+        socio.setNombres(dto.getNombres());
+        socio.setApellidos(dto.getApellidos());
+        socio.setDni(dto.getDni());
+        socio.setCorreo(dto.getCorreo());
+        socio.setVehiculo(dto.getVehiculo());
+
+        socio.getGaragesPropios().clear();
+
+        if(dto.getGaragePropios()!=null){
+            for(SocioGarageDTO garageDTO : dto.getGaragePropios()){
+
+                Garage garage = garageRepository.findById(garageDTO.getGarageCodigo())
+                        .orElseThrow(() -> new RuntimeException("Garage no encontrado"+ garageDTO.getGarageCodigo()));
+
+                SocioGarage sg = new SocioGarage();
+                sg.setSocio(socio);
+                sg.setGarage(garage);
+
+                socio.getGaragesPropios().add(sg);
+            }
+        }
+
+        return convertirADTO(socioRepository.save(socio));
+    }
+
+    private SocioDTO convertirADTO(Socio s){
+
+        List<SocioGarageDTO> garages = s.getGaragesPropios().stream()
+                .map(sg -> new SocioGarageDTO(sg.getGarage().getCodigo()))
+                .toList();
+
+        return SocioDTO.builder()
+                .codigo(s.getCodigo())
+                .dni(s.getDni())
+                .nombres(s.getNombres())
+                .apellidos(s.getApellidos())
+                .direccion(s.getDireccion())
+                .telefono(s.getTelefono())
+                .correo(s.getCorreo())
+                .vehiculo(s.getVehiculo())
+                .garagePropios(garages)
+                .build();
+    }
+
+
+
+
+    /* Servicios a implementar anteriores 
     @Override
     @Transactional(readOnly = true)
     public List<Socio> obtenerTodosLosSocios() {
@@ -116,4 +215,5 @@ public class SocioServiceImpl implements SocioService {
         }
         return socioRepository.buscarPorApellidoODni(criterio.trim());
     }
+        */
 }

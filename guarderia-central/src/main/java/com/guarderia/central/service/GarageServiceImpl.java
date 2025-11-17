@@ -22,7 +22,7 @@ public class GarageServiceImpl implements GarageService {
     }
 
     @Override
-    public Garage obtenerGaragePorId(Long id) {
+    public Garage obtenerGaragePorId(String id) {
         return garageRepository.findById(id)
                 .orElseThrow(() -> new GarageNotFoundException("Garage con ID '" + id + "' no encontrado"));
     }
@@ -34,7 +34,7 @@ public class GarageServiceImpl implements GarageService {
     }
 
     @Override
-    public void eliminarGarage(Long id) {
+    public void eliminarGarage(String id) {
         if (!garageRepository.existsById(id)) {
             throw new GarageNotFoundException("No existe el garage con ID '" + id + "'");
         }
@@ -42,7 +42,7 @@ public class GarageServiceImpl implements GarageService {
     }
 
     @Override
-    public boolean existeGarage(Long id) {
+    public boolean existeGarage(String id) {
         return garageRepository.existsById(id);
     }
 

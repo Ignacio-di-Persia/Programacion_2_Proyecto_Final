@@ -14,5 +14,7 @@ public class SocioDTO {
     private String apellidos;
     private String direccion;
     private String telefono;
-    private List<SocioGarageDTO> GaragePropios;
+    private String correo;
+    private String vehiculo;
+    private List<SocioGarageDTO> garagePropios;
 }

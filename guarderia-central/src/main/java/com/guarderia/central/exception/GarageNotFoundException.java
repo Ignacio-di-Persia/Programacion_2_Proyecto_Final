@@ -1,6 +1,9 @@
 package com.guarderia.central.exception;
 
-public class GarageNotFoundException {
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+public class GarageNotFoundException extends RuntimeException {
 
     public GarageNotFoundException(String mensaje) {
         super(mensaje);

@@ -16,6 +16,11 @@ import java.util.List;
 public class Socio {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "codigo")
+    private Long codigo;
+
+
     @Column(name = "dni", nullable = false)
     @NotNull(message = "El DNI es obligatorio")
     private Integer dni;
@@ -27,6 +32,14 @@ public class Socio {
     @Column(name = "apellidos", nullable = false, length = 100)
     @NotBlank
     private String apellidos;
+
+    @Column(name = "direccion", nullable = false, length = 200)
+    @NotBlank
+    private String direccion;
+
+    @Column(name = "telefono", nullable = false, length = 15)
+    @NotBlank
+    private String telefono;
 
     @Column(name = "fecha_nacimiento", nullable = false)
     @NotNull
@@ -42,7 +55,9 @@ public class Socio {
 
     // Relación con SocioGarage
     @OneToMany(mappedBy = "socio", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SocioGarage> garagesAsignados = new ArrayList<>();
+    private List<SocioGarage> garagesPropios = new ArrayList<>();
+
+
 
     @PrePersist
     public void prePersist() {

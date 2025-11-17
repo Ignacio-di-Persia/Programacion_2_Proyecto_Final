@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class SocioGarageId implements Serializable {
 
     @Column(name = "socio_codigo") 
-    private Long socioDni;
+    private Long socioCodigo;
 
     @Column(name = "garage_codigo")
     private String garageCodigo;

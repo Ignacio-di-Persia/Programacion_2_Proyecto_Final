@@ -46,10 +46,14 @@ public class SocioGarageServiceImpl implements SocioGarageService {
 
     @Override
     public void cambiarGarage(Socio socio, Garage garageNuevo) {
-        Optional<SocioGarage> asignacionOpt = socioGarageRepository.findBySocio(socio);
+        List<SocioGarage> asignaciones = socioGarageRepository.findAllBySocio(socio);
 
-        if (asignacionOpt.isPresent()) {
-            SocioGarage asignacionActual = asignacionOpt.get();
+        if (asignaciones.isEmpty()) {
+            asignarGarage(socio,garageNuevo);
+            return;
+        }
+        
+            SocioGarage asignacionActual = asignaciones.get(0);
             Garage garageActual = asignacionActual.getGarage();
 
             if (garageActual.getCodigo().equals(garageNuevo.getCodigo())) {
@@ -74,17 +78,15 @@ public class SocioGarageServiceImpl implements SocioGarageService {
             garageNuevo.setOcupado(true);
             garageRepository.save(garageNuevo);
 
-            log.info("Garage del socio {} cambiado de {} a {}", socio.getDni(), garageActual.getCodigo(), garageNuevo.getCodigo());
+            log.info("Garage del socio {} cambiado de {} a {}",socio.getDni(), garageActual.getCodigo(), garageNuevo.getCodigo());
 
-        } else {
-            // No había asignación previa
-            asignarGarage(socio, garageNuevo);
-        }
+        
     }
 
     @Override
     public void liberarGarage(Socio socio) {
         List<SocioGarage> asignaciones = socioGarageRepository.findAllBySocio(socio);
+       
         for (SocioGarage sg : asignaciones) {
             Garage g = sg.getGarage();
             if (g != null) {
@@ -96,3 +98,5 @@ public class SocioGarageServiceImpl implements SocioGarageService {
         }
     }
 }
+
+
