@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -64,40 +65,53 @@ public class SocioServiceImpl implements SocioService {
     }
 
     @Override
-    public SocioDTO guardarDTO (SocioDTO dto){
+    public SocioDTO guardarDTO(SocioDTO dto) {
 
-        Socio socio;
+    Socio socio;
 
-        if(dto.getCodigo() != null) {
-            socio = buscarPorId(dto.getCodigo());
-        } else {
-            socio = new Socio();
-        }
+    // Si viene con ID, lo buscamos. Si no, creamos uno nuevo
+    if (dto.getCodigo() != null) {
+        socio = buscarPorId(dto.getCodigo());
+    } else {
+        socio = new Socio();
+        socio.setGaragesPropios(new ArrayList<>()); // inicializar
+    }
 
-        //Datos basicos
-        socio.setNombres(dto.getNombres());
-        socio.setApellidos(dto.getApellidos());
-        socio.setDni(dto.getDni());
-        socio.setCorreo(dto.getCorreo());
-        socio.setVehiculo(dto.getVehiculo());
+    // Datos básicos
+    socio.setNombres(dto.getNombres());
+    socio.setApellidos(dto.getApellidos());
+    socio.setDni(dto.getDni());
+    socio.setDireccion(dto.getDireccion());
+    socio.setTelefono(dto.getTelefono());
+    socio.setCorreo(dto.getCorreo());
+    socio.setVehiculo(dto.getVehiculo());
 
+    // Evitar null pointer
+    if (socio.getGaragesPropios() == null) {
+        socio.setGaragesPropios(new ArrayList<>());
+    } else {
         socio.getGaragesPropios().clear();
+    }
 
-        if(dto.getGaragePropios()!=null){
-            for(SocioGarageDTO garageDTO : dto.getGaragePropios()){
+    // Asignación de garages desde la lista del DTO
+    if (dto.getGaragePropios() != null) {
+        for (SocioGarageDTO garageDTO : dto.getGaragePropios()) {
 
-                Garage garage = garageRepository.findById(garageDTO.getGarageCodigo())
-                        .orElseThrow(() -> new RuntimeException("Garage no encontrado"+ garageDTO.getGarageCodigo()));
+            Garage garage = garageRepository.findById(garageDTO.getGarageCodigo())
+                    .orElseThrow(() ->
+                            new RuntimeException("Garage no encontrado: " + garageDTO.getGarageCodigo())
+                    );
 
-                SocioGarage sg = new SocioGarage();
-                sg.setSocio(socio);
-                sg.setGarage(garage);
+            SocioGarage sg = new SocioGarage();
+            sg.setSocio(socio);
+            sg.setGarage(garage);
 
-                socio.getGaragesPropios().add(sg);
-            }
+            socio.getGaragesPropios().add(sg);
+          }
         }
 
-        return convertirADTO(socioRepository.save(socio));
+    Socio guardado = socioRepository.save(socio);
+        return convertirADTO(guardado);
     }
 
     private SocioDTO convertirADTO(Socio s){

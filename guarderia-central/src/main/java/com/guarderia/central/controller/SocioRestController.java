@@ -39,8 +39,9 @@ public class SocioRestController {
     }
 
     @PostMapping
-    public SocioDTO crear(@RequestBody SocioDTO socioDTO) {
-        return socioService.guardarDTO(socioDTO);
+    public ResponseEntity<SocioDTO> crear(@RequestBody @Valid SocioDTO socioDTO) {
+        SocioDTO guardado = socioService.guardarDTO(socioDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(guardado);
     }
 
     @PostMapping("/guardar")
@@ -94,7 +95,7 @@ public class SocioRestController {
         Socio socio = socioService.obtenerSocioPorDni(dni);
         return ResponseEntity.ok(socio);
     }
-*/
+
     // POST - Crear nuevo socio con garage
     @PostMapping
     public ResponseEntity<Socio> crearSocio(
@@ -105,7 +106,7 @@ public class SocioRestController {
         Socio nuevoSocio = socioService.crearSocio(socio, garageCodigo);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoSocio);
     }
-    /*
+    
 
     // PUT - Actualizar socio con garage
     @PutMapping("/{dni}")

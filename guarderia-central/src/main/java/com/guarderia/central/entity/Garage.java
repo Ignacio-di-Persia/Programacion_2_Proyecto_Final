@@ -23,7 +23,7 @@ public class Garage {
     private String codigo; 
 
     @Column(name = "ocupado", nullable = false)
-    private boolean ocupado;
+   private boolean ocupado;
 
     @OneToMany(mappedBy = "garage", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore

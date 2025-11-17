@@ -153,6 +153,16 @@
             </div>
 
             <div class="form-group">
+                 <label for="direccion">Dirección:</label>
+                 <input type="text" id="direccion" name="direccion" required>
+            </div>
+
+            <div class="form-group">
+                <label for="telefono">Teléfono:</label>
+                <input type="text" id="telefono" name="telefono" required>
+            </div>
+
+            <div class="form-group">
                 <label for="correo">Correo Electrónico: <span class="required">*</span></label>
                 <input type="email" id="correo" name="correo" required maxlength="150">
                 <div id="correoError" class="error-message">El correo es obligatorio y debe ser válido</div>
@@ -170,7 +180,7 @@
                 </select>
             </div>
 
-            <button class="btn-submit" type="submit">Guardar Socio</button>
+            <button id="submitBtn" class="btn-submit" type="submit">Guardar Socio</button>
 
         </form>
     </div>
@@ -255,10 +265,16 @@
                 dni: parseInt(document.getElementById('dni').value),
                 nombres: document.getElementById('nombres').value.trim(),
                 apellidos: document.getElementById('apellidos').value.trim(),
+                direccion: document.getElementById('direccion').value.trim(),
+                telefono: document.getElementById('telefono').value.trim(),
                 fechaNacimiento: document.getElementById('fechaNacimiento').value,
                 correo: document.getElementById('correo').value.trim(),
                 vehiculo: document.getElementById('vehiculo').value.trim() || null,
-                garage: document.getElementById('garage').value.trim() || null
+                garagesPropios:[
+                    {garage: {codigo:document.getElementById('garage').value},
+                fechaAsignacion: new Date().toISOString().split('T')[0]
+              }
+                ]
             };
 
             try {
