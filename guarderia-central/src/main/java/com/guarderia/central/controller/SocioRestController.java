@@ -94,7 +94,7 @@ public class SocioRestController {
         Socio socio = socioService.obtenerSocioPorDni(dni);
         return ResponseEntity.ok(socio);
     }
-
+*/
     // POST - Crear nuevo socio con garage
     @PostMapping
     public ResponseEntity<Socio> crearSocio(
@@ -105,6 +105,7 @@ public class SocioRestController {
         Socio nuevoSocio = socioService.crearSocio(socio, garageCodigo);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoSocio);
     }
+    /*
 
     // PUT - Actualizar socio con garage
     @PutMapping("/{dni}")
@@ -128,7 +129,7 @@ public class SocioRestController {
         response.put("message", "Socio eliminado correctamente");
 
         return ResponseEntity.ok(response);
-    }
+    }*/
 
     // GET - Verificar si existe DNI
     @GetMapping("/existe/{dni}")
@@ -165,5 +166,5 @@ public class SocioRestController {
         List<Socio> socios = socioService.buscarPorDniParcial(dniPrefix);
         return ResponseEntity.ok(socios);
     }
- */
+ 
 }

@@ -9,6 +9,7 @@ import com.guarderia.central.dto.SocioDTO;
 import com.guarderia.central.dto.SocioGarageDTO;
 import com.guarderia.central.entity.SocioGarage;
 import com.guarderia.central.service.GarageService; 
+import com.guarderia.central.service.SocioGarageService;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,8 @@ public class SocioServiceImpl implements SocioService {
 
     private final SocioRepository socioRepository;
     private final GarageRepository garageRepository;
+    private final GarageService garageService;
+    private final SocioGarageService socioGarageService;
     
     @Override
     public List<Socio> listar(){
@@ -119,7 +122,7 @@ public class SocioServiceImpl implements SocioService {
 
 
 
-    /* Servicios a implementar anteriores 
+    // Servicios a implementar anteriores 
     @Override
     @Transactional(readOnly = true)
     public List<Socio> obtenerTodosLosSocios() {
@@ -133,6 +136,7 @@ public class SocioServiceImpl implements SocioService {
         return socioRepository.findByDni(dni)
                 .orElseThrow(() -> new SocioException("Socio con DNI " + dni + " no encontrado"));
     }
+                
 
     @Override
     public Socio crearSocio(Socio socio, String garageCodigo) {
@@ -147,12 +151,13 @@ public class SocioServiceImpl implements SocioService {
 
         Socio nuevoSocio = socioRepository.save(socio);
 
-        Garage garage = garageService.obtenerGaragePorCodigo(garageCodigo);
+        Garage garage = garageService.obtenerGaragePorId(garageCodigo);
         socioGarageService.asignarGarage(nuevoSocio, garage);
 
         return nuevoSocio;
     }
 
+    /*
     @Override
     public Socio actualizarSocio(Integer dni, Socio socioNuevo, String garageCodigo) {
         Socio socioExistente = socioRepository.findById(dni)
@@ -188,6 +193,7 @@ public class SocioServiceImpl implements SocioService {
 
         log.info("Socio eliminado correctamente: {}", dni);
     }
+    */
 
     @Override
     @Transactional(readOnly = true)
@@ -215,5 +221,5 @@ public class SocioServiceImpl implements SocioService {
         }
         return socioRepository.buscarPorApellidoODni(criterio.trim());
     }
-        */
+        
 }

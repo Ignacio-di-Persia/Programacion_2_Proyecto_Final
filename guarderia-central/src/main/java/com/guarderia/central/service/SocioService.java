@@ -6,7 +6,6 @@ import java.util.List;
 
 public interface SocioService {
 
-
     //Metodos anteriores
     List<Socio> listar();
     Socio buscarPorId(Long codigo);
@@ -20,17 +19,18 @@ public interface SocioService {
 
 
 
-    /* Consultar anteriores 
+    // Consultar anteriores 
 
     List<Socio> obtenerTodosLosSocios();
 
     Socio obtenerSocioPorDni(Integer dni);
 
     Socio crearSocio(Socio socio, String garageCodigo);
-
+    /*
     Socio actualizarSocio(Integer dni, Socio socioNuevo, String garageCodigo);
 
     void eliminarSocio(Integer dni);
+    */
 
     boolean existeDni(Integer dni);
 
@@ -39,5 +39,5 @@ public interface SocioService {
     List<Socio> buscarPorDniParcial(String dniPrefix);
 
     List<Socio> buscarPorCriterio(String criterio);
-    */
+    
 }
