@@ -30,10 +30,10 @@ public class SecurityConfig {
                 .requestMatchers("/zonas/**").hasRole("ADMIN")
                 .requestMatchers("/garages/**").hasRole("ADMIN")
                 .requestMatchers("/vehiculos/**").hasRole("ADMIN")
-                .requestMatchers("/portal/**").hasAnyRole("SOCIO", "EMPLEADO","ADMIN")
+                .requestMatchers("/portal/**").hasAnyRole("SOCIO", "EMPLEADO")
                 // TODO: Refinar los permisos de listado. Actualmente permitimos listar a ADMIN, EMPLEADO y SOCIO pero en socio tendrian que ser sus vehiculos y en empleado los que estan en los garages a cargo.
-                .requestMatchers(HttpMethod.GET, "/vehiculos/listar").hasAnyRole("ADMIN", "EMPLEADO", "SOCIO")
-                .requestMatchers(HttpMethod.GET, "/socios/listar").hasAnyRole("ADMIN", "SOCIO", "EMPLEADO")
+                .requestMatchers(HttpMethod.GET, "/vehiculos/listar").hasAnyRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/socios/listar").hasAnyRole("ADMIN")
                 .requestMatchers("/login").permitAll()
                 .anyRequest().authenticated()
             )

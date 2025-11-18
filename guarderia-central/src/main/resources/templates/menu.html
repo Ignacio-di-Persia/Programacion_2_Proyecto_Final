@@ -40,13 +40,6 @@
                 <br>
                 <small>Ver listado de garages y zonas bajo mi responsabilidad.</small>
             </a>
-
-            <a th:href="@{/socios/listar}" class="list-group-item list-group-item-action"
-               sec:authorize="hasAnyRole('EMPLEADO')">
-                <strong>Consultar Socios</strong>
-                <br>
-                <small>Ver la lista de socios registrados.</small>
-            </a>
     
             <a th:href="@{/empleados/listar}" class="list-group-item list-group-item-action"
                sec:authorize="hasRole('ADMIN')">
