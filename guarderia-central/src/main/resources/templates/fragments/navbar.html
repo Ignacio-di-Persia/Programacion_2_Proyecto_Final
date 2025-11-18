@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+                xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    </head>
+<body>
+
+    <nav class="navbar navbar-dark bg-dark" th:fragment="navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" th:href="@{/}">Guarderia Central</a>
+            
+            <form th:action="@{/logout}" method="post" class="d-flex">
+                <button type="submit" class="btn btn-link nav-link" style="color: white;">Cerrar Sesión</button>
+            </form>
+        </div>
+    </nav>
+
+</body>
+</html>

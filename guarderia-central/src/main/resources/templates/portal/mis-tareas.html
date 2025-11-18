@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Tareas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container mt-4">
+        
+        <div class="card mb-4 border-primary">
+            <div class="card-body">
+                <h2 class="card-title text-primary">
+                    <span th:text="${empleado.nombre}"></span>
+                </h2>
+                <p class="card-text text-muted">
+                    <strong>Especialidad:</strong> <span th:text="${empleado.especialidad}"></span> | 
+                    <strong>Código:</strong> <span th:text="${empleado.codigo}"></span>
+                </p>
+            </div>
+        </div>
+
+        <h3 class="mb-3">Mis Garages Asignados</h3>
+
+        <div th:if="${!garages.isEmpty()}">
+            <table class="table table-hover table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Zona</th>
+                        <th>N° Garage</th>
+                        <th>Estado</th>
+                        <th>Ocupante (Vehículo)</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="g : ${garages}">
+                        <td>
+                            <span class="badge bg-secondary" th:text="${g.zonaLetra}"></span>
+                        </td>
+                        <td th:text="${g.numeroGarage}"></td>
+                        
+                        <td>
+                            <span th:if="${g.vehiculoOcupanteId != null}" class="badge bg-danger">OCUPADO</span>
+                            <span th:unless="${g.vehiculoOcupanteId != null}" class="badge bg-success">LIBRE</span>
+                        </td>
+                        
+                        <td>
+                            <span th:if="${g.vehiculoOcupanteMatricula}" 
+                                  th:text="${g.vehiculoOcupanteMatricula}"></span>
+                            <span th:unless="${g.vehiculoOcupanteMatricula}" class="text-muted small">--</span>
+                        </td>
+
+                        <td>
+                            <a th:href="@{/portal/garage/{id}(id=${g.id})}" 
+                               class="btn btn-sm btn-outline-info">
+                                Ver Ficha
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div th:if="${garages.isEmpty()}" class="alert alert-warning" role="alert">
+            No tienes garages asignados actualmente. Contacta al administrador.
+        </div>
+
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${titulo}">Formulario de Garage</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                
+                <h1 th:text="${titulo}" class="mb-3">Formulario de Garage</h1>
+
+                <div th:if="${error}" class="alert alert-danger" role="alert">
+                    <strong>Error:</strong> <span th:text="${error}"></span>
+                </div>
+
+                <form th:action="@{${actionUrl}}" th:object="${garage}" method="post">
+
+                    <input type="hidden" th:field="*{id}" />
+
+                    <div class="mb-3">
+                        <label for="numeroGarage" class="form-label">Número de Garage</label>
+                        <input type="number" th:field="*{numeroGarage}" class="form-control" 
+                               th:errorclass="'is-invalid'" />
+                        <div th:if="${#fields.hasErrors('numeroGarage')}" th:errors="*{numeroGarage}" 
+                             class="invalid-feedback"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="zonaId" class="form-label">Zona</label>
+
+                        <div th:if="${garage.id == null}">
+                            <select th:field="*{zonaId}" class="form-select" th:errorclass="'is-invalid'">
+                                <option value="">-- Seleccione una Zona --</option>
+                                <option th:each="zona : ${zonas}"
+                                        th:value="${zona.id}" 
+                                        th:text="${zona.letra}">
+                                </option>
+                            </select>
+                            <div th:if="${#fields.hasErrors('zonaId')}" th:errors="*{zonaId}" 
+                                 class="invalid-feedback"></div>
+                        </div>
+
+                        <div th:if="${garage.id != null}">
+                            <input type="hidden" th:field="*{zonaId}" />
+                            
+                            <input type="text" class="form-control" th:value="${garage.zonaLetra}" disabled />
+                            <div class="form-text">
+                                La Zona de un garage no puede ser modificada después de su creación.
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <a th:href="@{/garages/listar}" class="btn btn-secondary">Cancelar</a>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
